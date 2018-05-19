@@ -8,7 +8,7 @@
 from abc import ABCMeta, abstractmethod
 
 
-class Train(metaclass=ABCMeta):
+class Test(metaclass=ABCMeta):
     @abstractmethod
     def run(self, *args):
         """

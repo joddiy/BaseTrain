@@ -10,4 +10,4 @@ if __name__ == '__main__':
     pp_instance = PPMalConv()
     train, label = pp_instance.run()
     print('Shape of the train data: ', train.shape)
-    print('Shape of the label data: ', train.shape)
+    print('Shape of the label data: ', label.shape)
