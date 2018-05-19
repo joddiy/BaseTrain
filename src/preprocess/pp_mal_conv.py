@@ -8,6 +8,7 @@ from src.config.config import *
 import pandas as pd
 
 from src.preprocess.pre_process import PreProcess
+import os.path
 
 
 def get_bytes_array(data):
@@ -46,14 +47,14 @@ class PPMalConv(PreProcess):
         call all functions
         :return:
         """
-        try:
-            store = pd.HDFStore(self.config["cleaned_data"])
-            self.train = store['train']
-            self.label = store['label']
-        except Exception as e:
+        if not os.path.isfile(self.config["cleaned_data"]):
             self.read_input()
             self.feature_engineering()
             self.save_cleaned_data()
+        else:
+            store = pd.HDFStore(self.config["cleaned_data"])
+            self.train = store['train']
+            self.label = store['label']
         return self.train, self.label
 
     def read_input(self):
