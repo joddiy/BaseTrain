@@ -11,9 +11,13 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__ + "/../../"))
 
 DATA_DIR = PROJECT_DIR + '/input/'
 
-DATA_CONFIG = {
-    'train': 'train.csv',
-    'label': 'train_label.csv',
+CACHE_DIR = PROJECT_DIR + '/cache/'
 
-    'test' : '',
+DATA_CONFIG = {
+    'mal_conv': {
+        'train': DATA_DIR + 'train.csv',
+        'label': DATA_DIR + 'train_label.csv',
+        'test': DATA_DIR + '',
+        'cleaned_data': CACHE_DIR + 'mal_conv.h5',
+    }
 }
