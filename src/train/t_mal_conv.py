@@ -4,6 +4,8 @@
 # time: 2018/5/19 9:28 PM
 # Copyright (C) <2017>  <Joddiy Zhang>
 # ------------------------------------------------------------------------
+import hashlib
+import json
 import pickle
 
 import keras
@@ -38,9 +40,20 @@ class TMalConv(Train):
 
     def __init__(self):
         self.train, self.label = PPMalConv().run()
+        self.max_len = self.train.shape[1]
         self.history = None
         self.model = None
-        self.max_len = self.train.shape[1]
+        self.p_md5 = None
+        self.summary = {
+
+        }
+
+    def generate_p(self):
+        """
+        generate parameter for the summary
+        :return:
+        """
+        pass
 
     def run(self, *args):
         """
@@ -54,7 +67,15 @@ class TMalConv(Train):
         summary this model
         :return:
         """
-        pass
+        self.p_md5 = hashlib.md5(json.dumps(self.summary, sort_keys=True)).hexdigest()
+
+    def get_p(self, key):
+        """
+        get the parameter from the summary
+        :param key:
+        :return:
+        """
+        return self.summary[key]
 
     def get_model(self, *args):
         """
@@ -67,12 +88,12 @@ class TMalConv(Train):
 
         embedding_out = Embedding(256, 8, input_length=self.max_len)(net_input)
         merged = gate_cnn(embedding_out, 256)
-        # # add several ensemble gated cnn kernels
-        # for ks in kernel_sizes:
-        #     merged = concatenate([merged, gate_cnn(embedding_out, ks)])
+        # add several ensemble gated cnn kernels
+        for ks in kernel_sizes:
+            merged = concatenate([merged, gate_cnn(embedding_out, ks)])
 
         dense_out = Dense(128)(merged)
-        # dropout_out = Dropout(0.2)(dense_out)
+        dropout_out = Dropout(0.2)(dense_out)
         net_output = Dense(1, activation='sigmoid')(dense_out)
 
         model = keras.models.Model(inputs=net_input, outputs=net_output)
