@@ -16,8 +16,20 @@ CACHE_DIR = PROJECT_DIR + '/cache/'
 DATA_CONFIG = {
     'mal_conv': {
         'using_cache': False,
-        'train': DATA_DIR + 'train.csv',
-        'label': DATA_DIR + 'train_label.csv',
+        'train': [
+            DATA_DIR + '1_train.csv',
+            DATA_DIR + '2_train.csv',
+            DATA_DIR + '3_train.csv',
+            DATA_DIR + '4_train.csv',
+        ],
+        'label': [
+            DATA_DIR + '1_train_label.csv',
+            DATA_DIR + '2_train_label.csv',
+            DATA_DIR + '3_train_label.csv',
+            DATA_DIR + '4_train_label.csv',
+        ],
+        'v_train': DATA_DIR + 'test.csv',
+        'v_label': DATA_DIR + 'test_label.csv',
         'test': DATA_DIR + '',
         'cleaned_data': CACHE_DIR + 'mal_conv.h5',
     }

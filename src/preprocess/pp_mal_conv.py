@@ -41,6 +41,8 @@ class PPMalConv(PreProcess):
         self.train = None
         self.label = None
         self.test = None
+        self.v_y = None
+        self.v_x = None
 
     def run(self):
         """
@@ -65,16 +67,24 @@ class PPMalConv(PreProcess):
         read input data
         :return:
         """
-
         self.train = pd.read_csv(self.config["train"], header=None, sep="|", names=['row_data'], error_bad_lines=False)
-        self.label = pd.read_csv(self.config["label"], sep=",", error_bad_lines=False)
+        for idx in range(len(self.config["train"])):
+            train_file = self.config["train"][idx]
+            label_file = self.config["label"][idx]
+            print(train_file)
+            print(label_file)
+        #
+        # self.label = pd.read_csv(self.config["label"], sep=",", header=None, names=['label'], error_bad_lines=False)
+        # self.v_x = pd.read_csv(self.config["v_x"], header=None, sep="|", names=['row_data'], error_bad_lines=False)
+        # self.v_y = pd.read_csv(self.config["v_y"], sep=",", error_bad_lines=False)
 
     def feature_engineering(self):
         """
         feature engineering
         :return:
         """
-        self.label.drop('sample_id', axis=1, inplace=True)
+        self.train = self.train["row_data"].apply(lambda x: get_bytes_array(x))
+        self.train = pd.DataFrame(self.train.tolist())
         self.train = self.train["row_data"].apply(lambda x: get_bytes_array(x))
         self.train = pd.DataFrame(self.train.tolist())
 

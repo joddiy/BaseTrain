@@ -19,6 +19,7 @@ from src.config.config import CACHE_DIR
 from src.preprocess.pp_mal_conv import PPMalConv
 from src.train.train import Train
 from src.utils.utils import save
+import numpy as np
 
 
 class TMalConv(Train):
@@ -34,7 +35,7 @@ class TMalConv(Train):
         self.p_md5 = None
         self.summary = {
             'batch_size': 256,
-            'epochs': 64,
+            'epochs': 8,
             's_test_size': 0.01,
             's_random_state': 5242,
             'e_s_patience': 8,
@@ -128,9 +129,9 @@ class TMalConv(Train):
                            metrics=['accuracy'])
 
         h = self.model.fit(x_train, y_train,
-                                      batch_size=batch_size,
-                                      epochs=epochs, callbacks=[callback],
-                                      validation_data=(x_test, y_test))
+                           batch_size=batch_size,
+                           epochs=epochs, callbacks=[callback],
+                           validation_data=(x_test, y_test))
         self.history = h.history
 
         score = roc_auc_score(y_test, self.model.predict(x_test))
@@ -149,3 +150,33 @@ class TMalConv(Train):
         :return:
         """
         self.model.save(CACHE_DIR + self.p_md5 + '.h5')
+
+    def get_fp(self):
+        """
+
+        :return:
+        """
+        y_true = label_df
+        fp_np_index = np.where(y_true == 0)
+
+        y_pred = model.predict(train_df)
+        auc = sm.roc_auc_score(y_true, y_pred)
+
+        fp_np = y_pred[fp_np_index].shape[0]
+        thre_index = int(np.ceil(fp_np - fp_np * 0.001))
+
+        sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
+        thre = sorted_pred_prob[thre_index]
+
+        y_pred_prob = np.vstack((y_pred.transpose(), (1 - y_pred).transpose())).transpose()
+        y_pred_prob[:, 1] = thre
+        y_pred_label = np.argmin(y_pred_prob, axis=-1)
+
+        tn, fp, fn, tp = sm.confusion_matrix(y_true, y_pred_label).ravel()
+        fp_rate = fp / (fp + tn)
+        recall_rate = tp / (tp + fn)
+
+        print('\n')
+        print('fp_rate:' + str(fp_rate))
+        print('recall_rate:' + str(recall_rate))
+        print('auc:' + str(auc))

@@ -8,5 +8,7 @@ from src.preprocess.pp_mal_conv import PPMalConv
 from src.train.t_mal_conv import TMalConv
 
 if __name__ == '__main__':
-    t_instance = TMalConv()
-    t_instance.run()
+    # t_instance = TMalConv()
+    # t_instance.run()
+    pp_instance = PPMalConv()
+    pp_instance.read_input()
