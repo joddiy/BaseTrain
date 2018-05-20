@@ -127,10 +127,11 @@ class TMalConv(Train):
                            optimizer='adam',
                            metrics=['accuracy'])
 
-        self.history = self.model.fit(x_train, y_train,
+        h = self.model.fit(x_train, y_train,
                                       batch_size=batch_size,
                                       epochs=epochs, callbacks=[callback],
                                       validation_data=(x_test, y_test))
+        self.history = h.history
 
         score = roc_auc_score(y_test, self.model.predict(x_test))
         print('Auc score:', score)
