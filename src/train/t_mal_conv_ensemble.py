@@ -10,7 +10,7 @@ import json
 import keras
 from keras import Input
 from keras.callbacks import EarlyStopping
-from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
+from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D, concatenate
 from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 
@@ -38,9 +38,10 @@ class TMalConvEnsemble(Train):
             's_test_size': 0.01,
             's_random_state': 5242,
             'e_s_patience': 2,
-            'g_c_filter': 256,
-            'g_c_kernel_size': 256,
-            'g_c_stride': 256,
+            'gate_units': [
+                [32, 1, 1],
+                [32, 1, 1],
+            ]
         }
 
     def generate_p(self):
@@ -76,17 +77,16 @@ class TMalConvEnsemble(Train):
         """
         return self.summary[key]
 
-    def gate_cnn(self, gate_cnn_input):
+    def gate_cnn(self, gate_cnn_input, gate_unit_config):
         """
         construct a gated cnn by the specific kernel size
+        :param gate_unit_config:
         :param gate_cnn_input:
-        :param kernel_size:
         :return:
         """
-        conv1_out = Conv1D(self.get_p("g_c_filter"), self.get_p("g_c_kernel_size"), strides=self.get_p("g_c_stride"))(
+        conv1_out = Conv1D(gate_unit_config[0], gate_unit_config[1], strides=gate_unit_config[2])(gate_cnn_input)
+        conv2_out = Conv1D(gate_unit_config[0], gate_unit_config[1], strides=gate_unit_config[2], activation="sigmoid")(
             gate_cnn_input)
-        conv2_out = Conv1D(self.get_p("g_c_filter"), self.get_p("g_c_kernel_size"), strides=self.get_p("g_c_stride"),
-                           activation="sigmoid")(gate_cnn_input)
         merged = Multiply()([conv1_out, conv2_out])
         gate_cnn_output = GlobalMaxPooling1D()(merged)
         return gate_cnn_output
@@ -101,7 +101,10 @@ class TMalConvEnsemble(Train):
         net_input = Input(shape=(self.max_len,))
 
         embedding_out = Embedding(256, 8, input_length=self.max_len)(net_input)
-        merged = self.gate_cnn(embedding_out)
+        merged = self.gate_cnn(embedding_out, )
+        # add several ensemble gated cnn kernels
+        for idx in range(len(self.summary['gate_units'])):
+            merged = concatenate([merged, self.gate_cnn(embedding_out, self.summary['gate_units'][idx])])
 
         dense_out = Dense(128)(merged)
         net_output = Dense(1, activation='sigmoid')(dense_out)
