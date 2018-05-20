@@ -47,7 +47,10 @@ class PPMalConv(PreProcess):
         call all functions
         :return:
         """
-        if not self.config['using_cache'] or not os.path.isfile(self.config["cleaned_data"]):
+        if not self.config['using_cache']:
+            self.read_input()
+            self.feature_engineering()
+        elif not os.path.isfile(self.config["cleaned_data"]):
             self.read_input()
             self.feature_engineering()
             self.save_cleaned_data()
