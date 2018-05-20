@@ -140,7 +140,8 @@ class TMalConv(Train):
 
         :return:
         """
-        save(self.history, CACHE_DIR + self.p_md5 + '.pickle')
+        print(self.history)
+        save(self.history, CACHE_DIR + self.p_md5)
 
     def save_model(self):
         """
