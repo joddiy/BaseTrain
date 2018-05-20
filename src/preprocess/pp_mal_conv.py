@@ -85,7 +85,6 @@ class PPMalConv(PreProcess):
             label_file = self.config["label"][idx]
             tmp_train = pd.read_csv(train_file, header=None, names=range(8192), error_bad_lines=False)
             tmp_train.fillna(0)
-            tmp_train.astype("float64")
             tmp_label = pd.read_csv(label_file, header=None, error_bad_lines=False)
             if self.train is None:
                 self.train = tmp_train
@@ -100,7 +99,6 @@ class PPMalConv(PreProcess):
 
         self.v_x = pd.read_csv(self.config["v_train"], header=None, names=range(8192), error_bad_lines=False)
         self.v_x.fillna(0)
-        self.v_x.astype("float64")
         self.v_y = pd.read_csv(self.config["v_label"], header=None, error_bad_lines=False)
         print('Shape of the v_x data: ', self.v_x.shape)
         print('Shape of the v_y data: ', self.v_y.shape)
