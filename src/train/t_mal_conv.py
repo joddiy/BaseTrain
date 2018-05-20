@@ -18,6 +18,7 @@ from sklearn.model_selection import train_test_split
 from src.config.config import CACHE_DIR
 from src.preprocess.pp_mal_conv import PPMalConv
 from src.train.train import Train
+from src.utils.utils import save
 
 
 class TMalConv(Train):
@@ -37,9 +38,9 @@ class TMalConv(Train):
             's_test_size': 0.01,
             's_random_state': 5242,
             'e_s_patience': 3,
-            'g_c_filter': 256,
-            'g_c_kernel_size': 256,
-            'g_c_stride': 256,
+            'g_c_filter': 128,
+            'g_c_kernel_size': 128,
+            'g_c_stride': 128,
         }
 
     def generate_p(self):
@@ -139,8 +140,7 @@ class TMalConv(Train):
 
         :return:
         """
-        with open(CACHE_DIR + self.p_md5 + '.pickle', 'wb') as file_pi:
-            pickle.dump(self.history, file_pi)
+        save(self.history, CACHE_DIR + self.p_md5 + '.pickle')
 
     def save_model(self):
         """
