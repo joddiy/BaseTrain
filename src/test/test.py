@@ -10,17 +10,15 @@ from abc import ABCMeta, abstractmethod
 
 class Test(metaclass=ABCMeta):
     @abstractmethod
-    def run(self, *args):
+    def run(self):
         """
-        :param args:
         :return:
         """
         pass
 
     @abstractmethod
-    def predict(self, *args):
+    def predict(self):
         """
-        :param args:
         :return:
         """
         pass
