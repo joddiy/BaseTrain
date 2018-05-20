@@ -70,9 +70,9 @@ class PPMalConv(PreProcess):
         for idx in range(len(self.config["train"])):
             train_file = self.config["train"][idx]
             label_file = self.config["label"][idx]
-            tmp_train = pd.read_csv(train_file, header=None, sep="|", names=['row_data'],
-                                    error_bad_lines=False)
-            tmp_train = pd.DataFrame(tmp_train["row_data"].apply(lambda x: get_bytes_array(x)).tolist())
+            tmp_train = pd.read_csv(train_file, header=None, names=range(8192), error_bad_lines=False)
+            tmp_train.fillna(0)
+            print(tmp_train.dtypes)
             tmp_label = pd.read_csv(label_file, header=None, error_bad_lines=False)
             if self.train is None:
                 self.train = tmp_train
