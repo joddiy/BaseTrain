@@ -10,7 +10,7 @@ from abc import ABCMeta, abstractmethod
 
 class Train(metaclass=ABCMeta):
     @abstractmethod
-    def run(self, *args):
+    def run(self):
         """
         :param args:
         :return:
@@ -18,7 +18,7 @@ class Train(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_model(self, *args):
+    def get_model(self):
         """
         :param args:
         :return:

@@ -15,22 +15,9 @@ from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 
+from src.config.config import CACHE_DIR
 from src.preprocess.pp_mal_conv import PPMalConv
 from src.train.train import Train
-
-
-def gate_cnn(gate_cnn_input, kernel_size):
-    """
-    construct a gated cnn by the specific kernel size
-    :param gate_cnn_input:
-    :param kernel_size:
-    :return:
-    """
-    conv1_out = Conv1D(256, 256, strides=256)(gate_cnn_input)
-    conv2_out = Conv1D(256, 256, strides=256, activation="sigmoid")(gate_cnn_input)
-    merged = Multiply()([conv1_out, conv2_out])
-    gate_cnn_output = GlobalMaxPooling1D()(merged)
-    return gate_cnn_output
 
 
 class TMalConv(Train):
@@ -39,13 +26,20 @@ class TMalConv(Train):
     """
 
     def __init__(self):
-        self.train, self.label = PPMalConv().run()
-        self.max_len = self.train.shape[1]
+        self.train_df, self.label_df = PPMalConv().run()
+        self.max_len = self.train_df.shape[1]
         self.history = None
         self.model = None
         self.p_md5 = None
         self.summary = {
-
+            'batch_size': 256,
+            'epochs': 16,
+            's_test_size': 0.01,
+            's_random_state': 5242,
+            'e_s_patience': 3,
+            'g_c_filter': 256,
+            'g_c_kernel_size': 256,
+            'g_c_stride': 256,
         }
 
     def generate_p(self):
@@ -55,12 +49,14 @@ class TMalConv(Train):
         """
         pass
 
-    def run(self, *args):
+    def run(self):
         """
-        :param args:
         :return:
         """
-        pass
+        self.train()
+        self.summary_model()
+        self.save_model()
+        self.save_history()
 
     def summary_model(self):
         """
@@ -68,6 +64,8 @@ class TMalConv(Train):
         :return:
         """
         self.p_md5 = hashlib.md5(json.dumps(self.summary, sort_keys=True)).hexdigest()
+        with open(CACHE_DIR + self.p_md5 + '.summary', 'wb') as file_pi:
+            pickle.dump(self.summary, file_pi)
 
     def get_p(self, key):
         """
@@ -77,7 +75,22 @@ class TMalConv(Train):
         """
         return self.summary[key]
 
-    def get_model(self, *args):
+    def gate_cnn(self, gate_cnn_input):
+        """
+        construct a gated cnn by the specific kernel size
+        :param gate_cnn_input:
+        :param kernel_size:
+        :return:
+        """
+        conv1_out = Conv1D(self.get_p("g_c_filter"), self.get_p("g_c_kernel_size"), strides=self.get_p("g_c_stride"))(
+            gate_cnn_input)
+        conv2_out = Conv1D(self.get_p("g_c_filter"), self.get_p("g_c_kernel_size"), strides=self.get_p("g_c_stride"),
+                           activation="sigmoid")(gate_cnn_input)
+        merged = Multiply()([conv1_out, conv2_out])
+        gate_cnn_output = GlobalMaxPooling1D()(merged)
+        return gate_cnn_output
+
+    def get_model(self):
         """
         get a model
         :param max_len:
@@ -87,13 +100,9 @@ class TMalConv(Train):
         net_input = Input(shape=(self.max_len,))
 
         embedding_out = Embedding(256, 8, input_length=self.max_len)(net_input)
-        merged = gate_cnn(embedding_out, 256)
-        # add several ensemble gated cnn kernels
-        for ks in kernel_sizes:
-            merged = concatenate([merged, gate_cnn(embedding_out, ks)])
+        merged = self.gate_cnn(embedding_out)
 
         dense_out = Dense(128)(merged)
-        dropout_out = Dropout(0.2)(dense_out)
         net_output = Dense(1, activation='sigmoid')(dense_out)
 
         model = keras.models.Model(inputs=net_input, outputs=net_output)
@@ -102,18 +111,19 @@ class TMalConv(Train):
         return model
 
     def train(self):
-        batch_size = 256
-        epochs = 16
+        batch_size = self.get_p("batch_size")
+        epochs = self.get_p("epochs")
 
-        self.model = self.get_model(self.max_len)
+        self.model = self.get_model()
 
-        x_train, x_test, y_train, y_test = train_test_split(self.train, self.label,
-                                                            test_size=0.01, random_state=5242)
+        x_train, x_test, y_train, y_test = train_test_split(self.train_df, self.label_df,
+                                                            test_size=self.get_p("s_test_size"),
+                                                            random_state=self.get_p("s_random_state"))
 
-        callback = EarlyStopping("val_loss", patience=3, verbose=0, mode='auto')
+        callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
 
         self.model.compile(loss='binary_crossentropy',
-                           optimizer='sgd',
+                           optimizer='adam',
                            metrics=['accuracy'])
 
         self.history = self.model.fit(x_train, y_train,
@@ -129,7 +139,7 @@ class TMalConv(Train):
 
         :return:
         """
-        with open('/trainHistoryDict', 'wb') as file_pi:
+        with open(CACHE_DIR + self.p_md5 + '.history', 'wb') as file_pi:
             pickle.dump(self.history, file_pi)
 
     def save_model(self):
@@ -137,4 +147,4 @@ class TMalConv(Train):
 
         :return:
         """
-        self.model.save('model.h5')
+        self.model.save(CACHE_DIR + self.p_md5 + '.h5')

@@ -5,9 +5,8 @@
 # Copyright (C) <2017>  <Joddiy Zhang>
 # ------------------------------------------------------------------------
 from src.preprocess.pp_mal_conv import PPMalConv
+from src.train.t_mal_conv import TMalConv
 
 if __name__ == '__main__':
-    pp_instance = PPMalConv()
-    train, label = pp_instance.run()
-    print('Shape of the train data: ', train.shape)
-    print('Shape of the label data: ', label.shape)
+    t_instance = TMalConv()
+    t_instance.run()
