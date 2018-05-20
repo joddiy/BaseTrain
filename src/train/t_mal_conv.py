@@ -29,6 +29,8 @@ class TMalConv(Train):
 
     def __init__(self):
         self.train_df, self.label_df = PPMalConv().run()
+        print('Shape of the sub train data: ', self.train_df.shape)
+        print('Shape of the sub label data: ', self.label_df.shape)
         self.max_len = self.train_df.shape[1]
         self.history = None
         self.model = None
