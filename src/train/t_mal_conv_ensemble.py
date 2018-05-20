@@ -33,14 +33,21 @@ class TMalConvEnsemble(Train):
         self.model = None
         self.p_md5 = None
         self.summary = {
-            'batch_size': 256,
+            'batch_size': 32,
             'epochs': 16,
             's_test_size': 0.01,
             's_random_state': 5242,
             'e_s_patience': 2,
+            'fp_rate': 0.001,
             'gate_units': [
                 [32, 1, 1],
-                [32, 1, 1],
+                [32, 2, 1],
+                [32, 4, 1],
+                [32, 8, 1],
+                [32, 16, 1],
+                [32, 32, 1],
+                [32, 64, 1],
+                [32, 128, 1],
             ]
         }
 
@@ -101,10 +108,13 @@ class TMalConvEnsemble(Train):
         net_input = Input(shape=(self.max_len,))
 
         embedding_out = Embedding(256, 8, input_length=self.max_len)(net_input)
-        merged = self.gate_cnn(embedding_out, )
+        merged = None
         # add several ensemble gated cnn kernels
         for idx in range(len(self.summary['gate_units'])):
-            merged = concatenate([merged, self.gate_cnn(embedding_out, self.summary['gate_units'][idx])])
+            if merged is None:
+                merged = self.gate_cnn(embedding_out, self.summary['gate_units'][idx])
+            else:
+                merged = concatenate([merged, self.gate_cnn(embedding_out, self.summary['gate_units'][idx])])
 
         dense_out = Dense(128)(merged)
         net_output = Dense(1, activation='sigmoid')(dense_out)
@@ -165,7 +175,7 @@ class TMalConvEnsemble(Train):
         auc = roc_auc_score(y_true, y_pred)
 
         fp_np = y_pred[fp_np_index].shape[0]
-        thre_index = int(np.ceil(fp_np - fp_np * 0.001))
+        thre_index = int(np.ceil(fp_np - fp_np * self.get_p("fp_rate")))
 
         sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
         thre = sorted_pred_prob[thre_index]
