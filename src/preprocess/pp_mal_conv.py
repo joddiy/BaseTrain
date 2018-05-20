@@ -60,7 +60,7 @@ class PPMalConv(PreProcess):
             store = pd.HDFStore(self.config["cleaned_data"])
             self.train = store['train']
             self.label = store['label']
-        return self.train, self.label
+        return self.train, self.label, self.v_x, self.v_y
 
     def read_input(self):
         """
@@ -70,8 +70,9 @@ class PPMalConv(PreProcess):
         for idx in range(len(self.config["train"])):
             train_file = self.config["train"][idx]
             label_file = self.config["label"][idx]
-            tmp_train = pd.read_csv(train_file, header=None, names=range(8192), error_bad_lines=False)
-            tmp_train.fillna(0)
+            tmp_train = pd.read_csv(train_file, header=None, sep="|", names=['row_data'],
+                                    error_bad_lines=False)
+            tmp_train = pd.DataFrame(tmp_train["row_data"].apply(lambda x: get_bytes_array(x)).tolist())
             tmp_label = pd.read_csv(label_file, header=None, error_bad_lines=False)
             if self.train is None:
                 self.train = tmp_train
@@ -81,6 +82,10 @@ class PPMalConv(PreProcess):
                 self.label = tmp_label
             else:
                 self.label = self.label.append(tmp_label)
+
+        self.v_x = pd.read_csv(self.config["v_train"], header=None, names=range(8192), error_bad_lines=False)
+        self.v_x.fillna(0)
+        self.v_y = pd.read_csv(self.config["v_label"], header=None, error_bad_lines=False)
 
     def feature_engineering(self):
         """

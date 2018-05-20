@@ -6,13 +6,12 @@
 # ------------------------------------------------------------------------
 import hashlib
 import json
-import pickle
 
 import keras
 from keras import Input
 from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 
 from src.config.config import CACHE_DIR
@@ -28,7 +27,7 @@ class TMalConv(Train):
     """
 
     def __init__(self):
-        self.train_df, self.label_df = PPMalConv().run()
+        self.train_df, self.label_df, self.v_x, self.v_y = PPMalConv().run()
         print('Shape of the sub train data: ', self.train_df.shape)
         print('Shape of the sub label data: ', self.label_df.shape)
         self.max_len = self.train_df.shape[1]
@@ -136,14 +135,14 @@ class TMalConv(Train):
                            validation_data=(x_test, y_test))
         self.history = h.history
 
-        score = roc_auc_score(y_test, self.model.predict(x_test))
-        print('Auc score:', score)
-
     def save_history(self):
         """
 
         :return:
         """
+        self.get_fp()
+        with open(CACHE_DIR + self.p_md5 + '.json', 'w') as file_pi:
+            json.dump(self.summary, file_pi)
         save(self.history, CACHE_DIR + self.p_md5)
 
     def save_model(self):
@@ -158,11 +157,11 @@ class TMalConv(Train):
 
         :return:
         """
-        y_true = label_df
+        y_true = self.v_y
         fp_np_index = np.where(y_true == 0)
 
-        y_pred = model.predict(train_df)
-        auc = sm.roc_auc_score(y_true, y_pred)
+        y_pred = self.model.predict(self.v_x)
+        auc = roc_auc_score(y_true, y_pred)
 
         fp_np = y_pred[fp_np_index].shape[0]
         thre_index = int(np.ceil(fp_np - fp_np * 0.001))
@@ -174,9 +173,13 @@ class TMalConv(Train):
         y_pred_prob[:, 1] = thre
         y_pred_label = np.argmin(y_pred_prob, axis=-1)
 
-        tn, fp, fn, tp = sm.confusion_matrix(y_true, y_pred_label).ravel()
+        tn, fp, fn, tp = confusion_matrix(y_true, y_pred_label).ravel()
         fp_rate = fp / (fp + tn)
         recall_rate = tp / (tp + fn)
+
+        self.history['fp_rate'] = str(fp_rate)
+        self.history['recall_rate'] = str(recall_rate)
+        self.history['auc'] = str(auc)
 
         print('\n')
         print('fp_rate:' + str(fp_rate))
