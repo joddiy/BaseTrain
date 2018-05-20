@@ -118,26 +118,6 @@ class TMalConv(Train):
         epochs = self.get_p("epochs")
 
         self.model = self.get_model()
-        for idx in range(len(self.config["train"])):
-            train_file = self.config["train"][idx]
-            label_file = self.config["label"][idx]
-            tmp_train = pd.read_csv(train_file, header=None, sep="|", names=['row_data'],
-                                    error_bad_lines=False)
-            tmp_train = pd.DataFrame(tmp_train["row_data"].apply(lambda x: get_bytes_array(x)).tolist())
-            tmp_label = pd.read_csv(label_file, header=None, error_bad_lines=False)
-            if self.train is None:
-                self.train = tmp_train
-            else:
-                self.train = self.train.append(tmp_train)
-            if self.label is None:
-                self.label = tmp_label
-            else:
-                self.label = self.label.append(tmp_label)
-            print("read_input finish" + train_file)
-
-        self.v_x = pd.read_csv(self.config["v_train"], header=None, names=range(8192), error_bad_lines=False)
-        self.v_x.fillna(0)
-        self.v_y = pd.read_csv(self.config["v_label"], header=None, error_bad_lines=False)
 
         x_train, x_test, y_train, y_test = train_test_split(self.train_df, self.label_df,
                                                             test_size=self.get_p("s_test_size"),

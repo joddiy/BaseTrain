@@ -82,12 +82,15 @@ class PPMalConv(PreProcess):
                 self.label = tmp_label
             else:
                 self.label = self.label.append(tmp_label)
-            print("read_input finish" + train_file)
+            print('Shape of the train data: ', self.train.shape)
+            print('Shape of the label data: ', self.label.shape)
 
         self.v_x = pd.read_csv(self.config["v_train"], header=None, names=range(8192), error_bad_lines=False)
         self.v_x.fillna(0)
         self.v_x.astype("float64")
         self.v_y = pd.read_csv(self.config["v_label"], header=None, error_bad_lines=False)
+        print('Shape of the v_x data: ', self.v_x.shape)
+        print('Shape of the v_y data: ', self.v_y.shape)
 
     def feature_engineering(self):
         """
