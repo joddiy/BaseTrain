@@ -15,6 +15,7 @@ CACHE_DIR = PROJECT_DIR + '/cache/'
 
 DATA_CONFIG = {
     'mal_conv': {
+        'using_cache': False,
         'train': DATA_DIR + 'train.csv',
         'label': DATA_DIR + 'train_label.csv',
         'test': DATA_DIR + '',
