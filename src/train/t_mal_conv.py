@@ -53,10 +53,10 @@ class TMalConv(Train):
         """
         :return:
         """
-        self.train()
+        # self.train()
         self.summary_model()
-        self.save_model()
-        self.save_history()
+        # self.save_model()
+        # self.save_history()
 
     def summary_model(self):
         """
@@ -64,7 +64,7 @@ class TMalConv(Train):
         :return:
         """
         self.p_md5 = hashlib.md5(json.dumps(self.summary, sort_keys=True)).hexdigest()
-        with open(CACHE_DIR + self.p_md5 + '.summary', 'wb') as file_pi:
+        with open(CACHE_DIR + self.p_md5 + '.summary', 'wb', encoding='utf-8') as file_pi:
             pickle.dump(self.summary, file_pi)
 
     def get_p(self, key):
