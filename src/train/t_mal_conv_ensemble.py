@@ -21,7 +21,7 @@ from src.utils.utils import save
 import numpy as np
 
 
-class TMalConv(Train):
+class TMalConvEnsemble(Train):
     """
     train of mal conv
     """
@@ -34,10 +34,10 @@ class TMalConv(Train):
         self.p_md5 = None
         self.summary = {
             'batch_size': 256,
-            'epochs': 8,
+            'epochs': 16,
             's_test_size': 0.01,
             's_random_state': 5242,
-            'e_s_patience': 8,
+            'e_s_patience': 2,
             'g_c_filter': 256,
             'g_c_kernel_size': 256,
             'g_c_stride': 256,
