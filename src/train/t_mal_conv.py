@@ -34,13 +34,13 @@ class TMalConv(Train):
         self.p_md5 = None
         self.summary = {
             'batch_size': 256,
-            'epochs': 2,
+            'epochs': 64,
             's_test_size': 0.01,
             's_random_state': 5242,
-            'e_s_patience': 3,
-            'g_c_filter': 128,
-            'g_c_kernel_size': 128,
-            'g_c_stride': 128,
+            'e_s_patience': 8,
+            'g_c_filter': 256,
+            'g_c_kernel_size': 256,
+            'g_c_stride': 256,
         }
 
     def generate_p(self):
@@ -141,7 +141,6 @@ class TMalConv(Train):
 
         :return:
         """
-        print(self.history)
         save(self.history, CACHE_DIR + self.p_md5)
 
     def save_model(self):
