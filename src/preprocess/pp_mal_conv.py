@@ -82,6 +82,7 @@ class PPMalConv(PreProcess):
                 self.label = tmp_label
             else:
                 self.label = self.label.append(tmp_label)
+            print("read_input finish" + train_file)
 
         self.v_x = pd.read_csv(self.config["v_train"], header=None, names=range(8192), error_bad_lines=False)
         self.v_x.fillna(0)
