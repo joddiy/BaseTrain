@@ -41,6 +41,7 @@ class TMalConv(Train):
             'g_c_filter': 256,
             'g_c_kernel_size': 256,
             'g_c_stride': 256,
+            'fp_rate': 0.005
         }
 
     def generate_p(self):
@@ -162,7 +163,7 @@ class TMalConv(Train):
         auc = roc_auc_score(y_true, y_pred)
 
         fp_np = y_pred[fp_np_index].shape[0]
-        thre_index = int(np.ceil(fp_np - fp_np * 0.001))
+        thre_index = int(np.ceil(fp_np - fp_np * self.get_p("fp_rate")))
 
         sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
         thre = sorted_pred_prob[thre_index]
