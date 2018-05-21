@@ -11,6 +11,7 @@ import pandas as pd
 from keras.models import load_model
 from sklearn.metrics import roc_auc_score, confusion_matrix
 
+
 #
 def get_bytes_array(data):
     """
@@ -38,7 +39,7 @@ del tmp_v
 print('Shape of the v_x data: ', v_x.shape)
 print('Shape of the v_y data: ', v_y.shape)
 
-model = load_model('./cache/b51f071681e13de00a641d77f6bf0046.h5')
+model = load_model('./cache/0232ce7b2ef16fcbab5f384649cc8efa.h5')
 y_pred = model.predict(v_x)
 
 y_true = v_y
