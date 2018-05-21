@@ -83,7 +83,11 @@ class PPMalConv(PreProcess):
         for idx in range(len(self.config["train"])):
             train_file = self.config["train"][idx]
             label_file = self.config["label"][idx]
-            tmp_train = pd.read_csv(train_file, header=None, names=range(8192), error_bad_lines=False)
+            tmp_train = pd.read_csv(train_file, header=None, sep="|", names=['row_data'],
+                                    error_bad_lines=False)
+            tmp_train = tmp_train["row_data"].apply(lambda x: get_bytes_array(x))
+            tmp_train = pd.DataFrame(tmp_train.tolist())
+
             tmp_train.fillna(0)
             tmp_label = pd.read_csv(label_file, header=None, error_bad_lines=False)
             if self.train is None:
@@ -94,12 +98,17 @@ class PPMalConv(PreProcess):
                 self.label = tmp_label
             else:
                 self.label = self.label.append(tmp_label)
+            del tmp_train
+            del tmp_label
             print('Shape of the train data: ', self.train.shape)
             print('Shape of the label data: ', self.label.shape)
 
-        self.v_x = pd.read_csv(self.config["v_train"], header=None, names=range(8192), error_bad_lines=False)
-        self.v_x.fillna(0)
+        tmp_v = pd.read_csv(self.config["v_train"], header=None, sep="|", names=['row_data'],
+                            error_bad_lines=False)
+        tmp_v = tmp_v["row_data"].apply(lambda x: get_bytes_array(x))
+        self.v_x = pd.DataFrame(tmp_v.tolist())
         self.v_y = pd.read_csv(self.config["v_label"], header=None, error_bad_lines=False)
+        del tmp_v
         print('Shape of the v_x data: ', self.v_x.shape)
         print('Shape of the v_y data: ', self.v_y.shape)
 
