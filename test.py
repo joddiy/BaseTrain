@@ -40,11 +40,11 @@ def crop_exceed_data(data):
     return data[0: 8192]
 
 
-tmp_v = pd.read_csv("./input/1_train.csv", header=None, sep="|", names=['row_data'],
+tmp_v = pd.read_csv("./hdd1/malware_data/2_train.csv", header=None, sep="|", names=['row_data'],
                     error_bad_lines=False)
 tmp_v = tmp_v["row_data"].apply(lambda x: get_bytes_array(x))
 v_x = pd.DataFrame(tmp_v.tolist())
-v_y = pd.read_csv("./input/1_train_label.csv", header=None, error_bad_lines=False)
+v_y = pd.read_csv("./hdd1/malware_data/2_train_label.csv", header=None, error_bad_lines=False)
 del tmp_v
 print('Shape of the v_x data: ', v_x.shape)
 print('Shape of the v_y data: ', v_y.shape)
