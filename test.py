@@ -40,7 +40,7 @@ def crop_exceed_data(data):
     return data[0: 8192]
 
 
-tmp_v = pd.read_csv("./hdd1/", header=None, sep="|", names=['row_data'],
+tmp_v = pd.read_csv("./input/1_train.csv", header=None, sep="|", names=['row_data'],
                     error_bad_lines=False)
 tmp_v = tmp_v["row_data"].apply(lambda x: get_bytes_array(x))
 v_x = pd.DataFrame(tmp_v.tolist())
