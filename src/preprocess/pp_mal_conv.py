@@ -100,20 +100,15 @@ class PPMalConv(PreProcess):
             del tmp_label
             print('Shape of the train data: ', self.train.shape)
             print('Shape of the label data: ', self.label.shape)
+        return self.train, self.label
 
+    def read_v(self):
         tmp_v = pd.read_csv(self.config["v_train"], header=None, sep="|", names=['row_data'],
                             error_bad_lines=False)
         tmp_v = tmp_v["row_data"].apply(lambda x: get_bytes_array(x))
         self.v_x = pd.DataFrame(tmp_v.tolist())
         self.v_y = pd.read_csv(self.config["v_label"], header=None, error_bad_lines=False)
         del tmp_v
-        print('Shape of the v_x data: ', self.v_x.shape)
-        print('Shape of the v_y data: ', self.v_y.shape)
-
-    def read_v(self):
-        self.v_x = pd.read_csv(self.config["v_train"], header=None, names=range(8192), error_bad_lines=False)
-        self.v_x.fillna(0)
-        self.v_y = pd.read_csv(self.config["v_label"], header=None, error_bad_lines=False)
         print('Shape of the v_x data: ', self.v_x.shape)
         print('Shape of the v_y data: ', self.v_y.shape)
         return self.v_x, self.v_y

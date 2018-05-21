@@ -28,14 +28,16 @@ class TMalConv(Train):
     """
 
     def __init__(self):
-        self.train_df, self.label_df, self.v_x, self.v_y = PPMalConv().run()
+        self.train_df, self.label_df = PPMalConv().read_input()
+        self.v_x = None
+        self.v_y = None
         self.max_len = self.train_df.shape[1]
         self.history = None
         self.model = None
         self.p_md5 = None
         self.summary = {
             'batch_size': 32,
-            'epochs': 19,
+            'epochs': 64,
             's_test_size': 0.05,
             's_random_state': 5242,
             'e_s_patience': 3,
@@ -119,21 +121,22 @@ class TMalConv(Train):
 
         self.model = self.get_model()
 
-        # x_train, x_test, y_train, y_test = train_test_split(self.train_df, self.label_df,
-        #                                                     test_size=self.get_p("s_test_size"),
-        #                                                     random_state=self.get_p("s_random_state"))
+        x_train, x_test, y_train, y_test = train_test_split(self.train_df, self.label_df,
+                                                            test_size=self.get_p("s_test_size"),
+                                                            random_state=self.get_p("s_random_state"))
+        del self.train_df
+        del self.label_df
 
-        # callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
+        callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
 
         self.model.compile(loss='binary_crossentropy',
                            optimizer='adam',
                            metrics=['accuracy'])
 
-        h = self.model.fit(self.train_df, self.label_df,
+        h = self.model.fit(x_train, y_train,
                            batch_size=batch_size,
-                           epochs=epochs,  # callbacks=[callback],
-                           # validation_data=(x_test, y_test)
-                           )
+                           epochs=epochs, callbacks=[callback],
+                           validation_data=(x_test, y_test))
         self.history = h.history
 
     def save_history(self):
@@ -158,6 +161,7 @@ class TMalConv(Train):
 
         :return:
         """
+        self.v_x, self.v_y = PPMalConv().get_v()
         y_true = self.v_y
         fp_np_index = np.where(y_true == 0)
 
