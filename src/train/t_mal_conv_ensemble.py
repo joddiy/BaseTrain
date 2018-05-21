@@ -10,8 +10,7 @@ import json
 import keras
 from keras import Input
 from keras.callbacks import EarlyStopping
-from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D, concatenate, Dropout, \
-    BatchNormalization, Activation
+from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D, concatenate, Dropout
 from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 
@@ -41,14 +40,14 @@ class TMalConvEnsemble(Train):
             'e_s_patience': 2,
             'fp_rate': [0.001, 0.005, 0.01, 0.05],
             'gate_units': [
-                [32, 1, 1],
-                [32, 2, 1],
-                [32, 4, 1],
-                [32, 8, 1],
-                [32, 16, 1],
+                # [32, 1, 1],
+                # [32, 2, 1],
+                # [32, 4, 1],
+                # [32, 8, 1],
+                # [32, 16, 1],
                 # [32, 32, 1],
-                [32, 64, 1],
-                # [32, 128, 1],
+                # [32, 64, 1],
+                [32, 128, 1],
             ]
         }
 
