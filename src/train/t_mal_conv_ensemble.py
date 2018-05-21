@@ -28,7 +28,9 @@ class TMalConvEnsemble(Train):
     """
 
     def __init__(self):
-        self.train_df, self.label_df, self.v_x, self.v_y = PPMalConv().run()
+        self.train_df, self.label_df = PPMalConv().read_input()
+        self.v_x = None
+        self.v_y = None
         self.max_len = self.train_df.shape[1]
         self.history = None
         self.model = None
