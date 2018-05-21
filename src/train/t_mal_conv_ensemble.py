@@ -118,14 +118,7 @@ class TMalConvEnsemble(Train):
                 merged = concatenate([merged, self.gate_cnn(embedding_out, self.summary['gate_units'][idx])])
 
         dense_output = Dense(128)(merged)
-        batch_out = BatchNormalization()(dense_output)
-        a_out = Activation('sigmoid')(batch_out)
-        dropout_out = Dropout(0.5)(a_out)
-
-        dense_output = Dense(128)(dropout_out)
-        batch_out = BatchNormalization()(dense_output)
-        a_out = Activation('sigmoid')(batch_out)
-        dropout_out = Dropout(0.5)(a_out)
+        dropout_out = Dropout(0.2)(dense_output)
 
         net_output = Dense(1, activation='sigmoid')(dropout_out)
 
