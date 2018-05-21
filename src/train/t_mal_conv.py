@@ -37,14 +37,14 @@ class TMalConv(Train):
         self.p_md5 = None
         self.summary = {
             'batch_size': 32,
-            'epochs': 64,
+            'epochs': 6,
             's_test_size': 0.05,
             's_random_state': 5242,
             'e_s_patience': 3,
             'g_c_filter': 128,
             'g_c_kernel_size': 500,
             'g_c_stride': 500,
-            'fp_rate': [0.001, 0.005, 0.01, 0.05],
+            # 'fp_rate': [0.001, 0.005, 0.01, 0.05],
         }
 
     def generate_p(self):
@@ -121,22 +121,23 @@ class TMalConv(Train):
 
         self.model = self.get_model()
 
-        x_train, x_test, y_train, y_test = train_test_split(self.train_df, self.label_df,
-                                                            test_size=self.get_p("s_test_size"),
-                                                            random_state=self.get_p("s_random_state"))
-        del self.train_df
-        del self.label_df
+        # x_train, x_test, y_train, y_test = train_test_split(self.train_df, self.label_df,
+        #                                                     test_size=self.get_p("s_test_size"),
+        #                                                     random_state=self.get_p("s_random_state"))
+        # del self.train_df
+        # del self.label_df
 
-        callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
+        # callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
 
         self.model.compile(loss='binary_crossentropy',
                            optimizer='adam',
                            metrics=['accuracy'])
 
-        h = self.model.fit(x_train, y_train,
+        h = self.model.fit(self.train_df, self.label_df,
                            batch_size=batch_size,
-                           epochs=epochs, callbacks=[callback],
-                           validation_data=(x_test, y_test))
+                           epochs=epochs,  # callbacks=[callback],
+                           # validation_data=(x_test, y_test)
+                           )
         self.history = h.history
 
     def save_history(self):
@@ -144,7 +145,7 @@ class TMalConv(Train):
 
         :return:
         """
-        self.get_fp()
+        # self.get_fp()
         with open(CACHE_DIR + self.p_md5 + '.json', 'w') as file_pi:
             json.dump(self.summary, file_pi)
         save(self.history, CACHE_DIR + self.p_md5)

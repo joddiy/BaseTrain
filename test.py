@@ -56,9 +56,9 @@ for f_name in model_files:
 
     res = {}
 
-    for idx in range(1, 500):
+    for idx in range(100, 1000):
         fp_np = y_pred[fp_np_index].shape[0]
-        thre_index = int(np.ceil(fp_np - fp_np * idx / 1000))
+        thre_index = int(np.ceil(fp_np - fp_np * idx / 10000))
 
         sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
         thre = sorted_pred_prob[thre_index]
