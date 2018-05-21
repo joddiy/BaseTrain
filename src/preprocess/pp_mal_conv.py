@@ -103,6 +103,14 @@ class PPMalConv(PreProcess):
         print('Shape of the v_x data: ', self.v_x.shape)
         print('Shape of the v_y data: ', self.v_y.shape)
 
+    def read_v(self):
+        self.v_x = pd.read_csv(self.config["v_train"], header=None, names=range(8192), error_bad_lines=False)
+        self.v_x.fillna(0)
+        self.v_y = pd.read_csv(self.config["v_label"], header=None, error_bad_lines=False)
+        print('Shape of the v_x data: ', self.v_x.shape)
+        print('Shape of the v_y data: ', self.v_y.shape)
+        return self.v_x, self.v_y
+
     def feature_engineering(self):
         """
         feature engineering
