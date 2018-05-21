@@ -130,7 +130,7 @@ class TMalConv(Train):
 
         h = self.model.fit(self.train_df, self.label_df,
                            batch_size=batch_size,
-                           epochs=epochs,  callbacks=[callback],
+                           epochs=epochs, callbacks=[callback],
                            validation_data=(x_test, y_test))
         self.history = h.history
 
