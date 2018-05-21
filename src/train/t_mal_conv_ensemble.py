@@ -10,7 +10,8 @@ import json
 import keras
 from keras import Input
 from keras.callbacks import EarlyStopping
-from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D, concatenate
+from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D, concatenate, Dropout, \
+    BatchNormalization, Activation
 from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 
@@ -35,19 +36,19 @@ class TMalConvEnsemble(Train):
         self.summary = {
             'batch_size': 32,
             'epochs': 16,
-            's_test_size': 0.01,
-            's_random_state': 5242,
+            's_test_size': 0.05,
+            's_random_state': 1234,
             'e_s_patience': 2,
             'fp_rate': 0.001,
             'gate_units': [
-                [128, 1, 1],
-                [128, 2, 1],
-                [128, 4, 1],
-                [128, 8, 1],
-                [128, 16, 1],
-                [128, 32, 1],
-                [128, 64, 1],
-                [128, 128, 1],
+                [32, 1, 1],
+                [32, 2, 1],
+                [32, 4, 1],
+                [32, 8, 1],
+                [32, 16, 1],
+                [32, 32, 1],
+                [32, 64, 1],
+                [32, 128, 1],
             ]
         }
 
@@ -116,8 +117,17 @@ class TMalConvEnsemble(Train):
             else:
                 merged = concatenate([merged, self.gate_cnn(embedding_out, self.summary['gate_units'][idx])])
 
-        dense_out = Dense(128)(merged)
-        net_output = Dense(1, activation='sigmoid')(dense_out)
+        dense_output = Dense(128)(merged)
+        batch_out = BatchNormalization(dense_output)
+        a_out = Activation('sigmoid')(batch_out)
+        dropout_out = Dropout(0.5)(a_out)
+
+        dense_output = Dense(128)(dropout_out)
+        batch_out = BatchNormalization(dense_output)
+        a_out = Activation('sigmoid')(batch_out)
+        dropout_out = Dropout(0.5)(a_out)
+
+        net_output = Dense(1, activation='sigmoid')(dropout_out)
 
         model = keras.models.Model(inputs=net_input, outputs=net_output)
         model.summary()
