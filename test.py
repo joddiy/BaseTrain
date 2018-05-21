@@ -44,11 +44,11 @@ print('Shape of the v_y data: ', v_y.shape)
 y_true = v_y
 fp_np_index = np.where(y_true == 0)
 
-model_files = [f for f in listdir('./cache/') if isfile(join('./cache/', f)) and f[-3:] == '.h5']
+model_files = [f for f in listdir('./cache2/') if isfile(join('./cache2/', f)) and f[-3:] == '.h5']
 
 for f_name in model_files:
 
-    model = load_model('./cache/' + f_name)
+    model = load_model('./cache2/' + f_name)
     y_pred = model.predict(v_x)
 
     auc = roc_auc_score(y_true, y_pred)
