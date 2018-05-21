@@ -33,7 +33,7 @@ class TMalConv(Train):
         self.model = None
         self.p_md5 = None
         self.summary = {
-            'batch_size': 256,
+            'batch_size': 32,
             'epochs': 9,
             's_test_size': 0.01,
             's_random_state': 5242,
