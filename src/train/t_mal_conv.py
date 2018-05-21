@@ -118,11 +118,11 @@ class TMalConv(Train):
 
         self.model = self.get_model()
 
-        # x_train, x_test, y_train, y_test = train_test_split(self.train_df, self.label_df,
-        #                                                     test_size=self.get_p("s_test_size"),
-        #                                                     random_state=self.get_p("s_random_state"))
+        x_train, x_test, y_train, y_test = train_test_split(self.train_df, self.label_df,
+                                                            test_size=self.get_p("s_test_size"),
+                                                            random_state=self.get_p("s_random_state"))
 
-        # callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
+        callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
 
         self.model.compile(loss='binary_crossentropy',
                            optimizer='adam',
@@ -130,9 +130,8 @@ class TMalConv(Train):
 
         h = self.model.fit(self.train_df, self.label_df,
                            batch_size=batch_size,
-                           epochs=epochs,  # callbacks=[callback],
-                           # validation_data=(x_test, y_test)
-                           )
+                           epochs=epochs,  callbacks=[callback],
+                           validation_data=(x_test, y_test))
         self.history = h.history
 
     def save_history(self):
