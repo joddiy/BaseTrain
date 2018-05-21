@@ -38,10 +38,10 @@ class TMalConv(Train):
             's_test_size': 0.01,
             's_random_state': 5242,
             'e_s_patience': 3,
-            'g_c_filter': 256,
-            'g_c_kernel_size': 256,
-            'g_c_stride': 256,
-            'fp_rate': 0.005
+            'g_c_filter': 128,
+            'g_c_kernel_size': 500,
+            'g_c_stride': 500,
+            'fp_rate': [0.001, 0.005, 0.01, 0.05],
         }
 
     def generate_p(self):
@@ -163,24 +163,27 @@ class TMalConv(Train):
         auc = roc_auc_score(y_true, y_pred)
 
         fp_np = y_pred[fp_np_index].shape[0]
-        thre_index = int(np.ceil(fp_np - fp_np * self.get_p("fp_rate")))
+        for idx in range(len(self.get_p("fp_rate"))):
+            print('\n, fp: ', self.get_p("fp_rate")[idx])
+            thre_index = int(np.ceil(fp_np - fp_np * self.get_p("fp_rate")[idx]))
 
-        sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
-        thre = sorted_pred_prob[thre_index]
+            sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
+            thre = sorted_pred_prob[thre_index]
 
-        y_pred_prob = np.vstack((y_pred.transpose(), (1 - y_pred).transpose())).transpose()
-        y_pred_prob[:, 1] = thre
-        y_pred_label = np.argmin(y_pred_prob, axis=-1)
+            y_pred_prob = np.vstack((y_pred.transpose(), (1 - y_pred).transpose())).transpose()
+            y_pred_prob[:, 1] = thre
+            y_pred_label = np.argmin(y_pred_prob, axis=-1)
 
-        tn, fp, fn, tp = confusion_matrix(y_true, y_pred_label).ravel()
-        fp_rate = fp / (fp + tn)
-        recall_rate = tp / (tp + fn)
+            tn, fp, fn, tp = confusion_matrix(y_true, y_pred_label).ravel()
+            fp_rate = fp / (fp + tn)
+            recall_rate = tp / (tp + fn)
 
-        self.history['fp_rate'] = str(fp_rate)
-        self.history['recall_rate'] = str(recall_rate)
-        self.history['auc'] = str(auc)
+            self.history['fp_rate'] = str(fp_rate)
+            self.history['recall_rate'] = str(recall_rate)
+            self.history['auc'] = str(auc)
 
-        print('\n')
-        print('fp_rate:' + str(fp_rate))
-        print('recall_rate:' + str(recall_rate))
-        print('auc:' + str(auc))
+            print('\n')
+            print('fp_rate:' + str(fp_rate))
+            print('recall_rate:' + str(recall_rate))
+            print('auc:' + str(auc))
+

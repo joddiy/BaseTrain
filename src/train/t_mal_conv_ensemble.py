@@ -39,7 +39,7 @@ class TMalConvEnsemble(Train):
             's_test_size': 0.05,
             's_random_state': 1234,
             'e_s_patience': 2,
-            'fp_rate': 0.001,
+            'fp_rate': [0.001, 0.005, 0.01, 0.05],
             'gate_units': [
                 [32, 1, 1],
                 [32, 2, 1],
@@ -118,7 +118,14 @@ class TMalConvEnsemble(Train):
                 merged = concatenate([merged, self.gate_cnn(embedding_out, self.summary['gate_units'][idx])])
 
         dense_output = Dense(128)(merged)
-        dropout_out = Dropout(0.5)(dense_output)
+        batch_out = BatchNormalization()(dense_output)
+        a_out = Activation('sigmoid')(batch_out)
+        dropout_out = Dropout(0.5)(a_out)
+
+        dense_output = Dense(128)(dropout_out)
+        batch_out = BatchNormalization()(dense_output)
+        a_out = Activation('sigmoid')(batch_out)
+        dropout_out = Dropout(0.5)(a_out)
 
         net_output = Dense(1, activation='sigmoid')(dropout_out)
 
@@ -178,24 +185,26 @@ class TMalConvEnsemble(Train):
         auc = roc_auc_score(y_true, y_pred)
 
         fp_np = y_pred[fp_np_index].shape[0]
-        thre_index = int(np.ceil(fp_np - fp_np * self.get_p("fp_rate")))
+        for idx in range(len(self.get_p("fp_rate"))):
+            print('\n, fp: ', self.get_p("fp_rate")[idx])
+            thre_index = int(np.ceil(fp_np - fp_np * self.get_p("fp_rate")[idx]))
 
-        sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
-        thre = sorted_pred_prob[thre_index]
+            sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
+            thre = sorted_pred_prob[thre_index]
 
-        y_pred_prob = np.vstack((y_pred.transpose(), (1 - y_pred).transpose())).transpose()
-        y_pred_prob[:, 1] = thre
-        y_pred_label = np.argmin(y_pred_prob, axis=-1)
+            y_pred_prob = np.vstack((y_pred.transpose(), (1 - y_pred).transpose())).transpose()
+            y_pred_prob[:, 1] = thre
+            y_pred_label = np.argmin(y_pred_prob, axis=-1)
 
-        tn, fp, fn, tp = confusion_matrix(y_true, y_pred_label).ravel()
-        fp_rate = fp / (fp + tn)
-        recall_rate = tp / (tp + fn)
+            tn, fp, fn, tp = confusion_matrix(y_true, y_pred_label).ravel()
+            fp_rate = fp / (fp + tn)
+            recall_rate = tp / (tp + fn)
 
-        self.history['fp_rate'] = str(fp_rate)
-        self.history['recall_rate'] = str(recall_rate)
-        self.history['auc'] = str(auc)
+            self.history['fp_rate'] = str(fp_rate)
+            self.history['recall_rate'] = str(recall_rate)
+            self.history['auc'] = str(auc)
 
-        print('\n')
-        print('fp_rate:' + str(fp_rate))
-        print('recall_rate:' + str(recall_rate))
-        print('auc:' + str(auc))
+            print('\n')
+            print('fp_rate:' + str(fp_rate))
+            print('recall_rate:' + str(recall_rate))
+            print('auc:' + str(auc))
