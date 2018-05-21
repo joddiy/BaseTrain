@@ -7,12 +7,14 @@
 
 import numpy as np
 import pandas as pd
-# from keras.models import load_model
 from keras.models import load_model
 from sklearn.metrics import roc_auc_score, confusion_matrix
+from os import listdir
+from os.path import isfile, join
+
+from src.utils.utils import save
 
 
-#
 def get_bytes_array(data):
     """
     int to bytes array
@@ -39,36 +41,40 @@ del tmp_v
 print('Shape of the v_x data: ', v_x.shape)
 print('Shape of the v_y data: ', v_y.shape)
 
-model = load_model('./cache/0232ce7b2ef16fcbab5f384649cc8efa.h5')
-y_pred = model.predict(v_x)
-
 y_true = v_y
 fp_np_index = np.where(y_true == 0)
 
-auc = roc_auc_score(y_true, y_pred)
+model_files = [f for f in listdir('./cache/') if isfile(join('./cache/', f)) and f[-3:] == '.h5']
 
-# false positive less than 0.1%
-# want to get the recall
+for f_name in model_files:
 
-fp_np = y_pred[fp_np_index].shape[0]
-thre_index = int(np.ceil(fp_np - fp_np * 0.001))
+    model = load_model('./cache/' + f_name)
+    y_pred = model.predict(v_x)
 
-sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
-thre = sorted_pred_prob[thre_index]
-if thre == 1:
-    thre = max(sorted_pred_prob[np.where(sorted_pred_prob != 1)])
+    auc = roc_auc_score(y_true, y_pred)
+    print('auc:' + str(auc))
 
-y_pred_prob = np.vstack((y_pred.transpose(), (1 - y_pred).transpose())).transpose()
-y_pred_prob[:, 1] = thre
-y_pred_label = np.argmin(y_pred_prob, axis=-1)
+    res = {}
 
-tn, fp, fn, tp = confusion_matrix(y_true, y_pred_label).ravel()
-fp_rate = fp / (fp + tn)
-recall_rate = tp / (tp + fn)
+    for idx in range(1, 500):
+        fp_np = y_pred[fp_np_index].shape[0]
+        thre_index = int(np.ceil(fp_np - fp_np * idx / 1000))
 
-auc = roc_auc_score(y_true, y_pred)
+        sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
+        thre = sorted_pred_prob[thre_index]
+        if thre == 1:
+            thre = max(sorted_pred_prob[np.where(sorted_pred_prob != 1)])
 
-print('\n')
-print('fp_rate:' + str(fp_rate))
-print('recall_rate:' + str(recall_rate))
-print('auc:' + str(auc))
+        y_pred_prob = np.vstack((y_pred.transpose(), (1 - y_pred).transpose())).transpose()
+        y_pred_prob[:, 1] = thre
+        y_pred_label = np.argmin(y_pred_prob, axis=-1)
+
+        tn, fp, fn, tp = confusion_matrix(y_true, y_pred_label).ravel()
+        fp_rate = fp / (fp + tn)
+        recall_rate = tp / (tp + fn)
+
+        auc = roc_auc_score(y_true, y_pred)
+
+        res[fp_rate] = recall_rate
+
+    save(res, './src/config/' + f_name[0:-3])
