@@ -185,6 +185,8 @@ class TMalConvEnsemble(Train):
 
             sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
             thre = sorted_pred_prob[thre_index]
+            if thre == 1:
+                thre = max(sorted_pred_prob[np.where(sorted_pred_prob != 1)])
 
             y_pred_prob = np.vstack((y_pred.transpose(), (1 - y_pred).transpose())).transpose()
             y_pred_prob[:, 1] = thre
