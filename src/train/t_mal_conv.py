@@ -8,6 +8,7 @@ import hashlib
 import json
 
 import keras
+import pandas as pd
 from keras import Input
 from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
@@ -161,6 +162,11 @@ class TMalConv(Train):
 
         y_pred = self.model.predict(self.v_x)
         auc = roc_auc_score(y_true, y_pred)
+
+        sub = pd.DataFrame()
+        sub['sample_id'] = range(len(y_pred))
+        sub['malware'] = y_pred
+        sub.to_csv(CACHE_DIR + self.p_md5 + '.csv', header=None, index=False)
 
         fp_np = y_pred[fp_np_index].shape[0]
         for idx in range(len(self.get_p("fp_rate"))):
