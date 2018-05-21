@@ -6,6 +6,7 @@
 # ------------------------------------------------------------------------
 import hashlib
 import json
+from src.config.config import *
 
 import keras
 from keras import Input
@@ -33,6 +34,7 @@ class TMalConvEnsemble(Train):
         self.model = None
         self.p_md5 = None
         self.summary = {
+            'input': DATA_CONFIG["mal_conv"]['train'],
             'batch_size': 32,
             'epochs': 9,
             's_test_size': 0.05,

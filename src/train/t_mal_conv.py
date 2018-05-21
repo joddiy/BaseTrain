@@ -14,6 +14,7 @@ from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
 from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
+from src.config.config import *
 
 from src.config.config import CACHE_DIR
 from src.preprocess.pp_mal_conv import PPMalConv
@@ -36,6 +37,7 @@ class TMalConv(Train):
         self.model = None
         self.p_md5 = None
         self.summary = {
+            'input': DATA_CONFIG["mal_conv"]['train'],
             'batch_size': 32,
             'epochs': 6,
             's_test_size': 0.05,
