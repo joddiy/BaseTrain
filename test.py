@@ -78,3 +78,10 @@ for f_name in model_files:
         res[fp_rate] = recall_rate
 
     save(res, './src/config/' + f_name[0:-3])
+
+# lists = sorted(object_file.items())
+# x, y = zip(*lists)
+# plt.title('model accuracy')
+# plt.ylabel('recall')
+# plt.xlabel('fp rate')
+# plt.show()
