@@ -43,7 +43,10 @@ y_true = v_y
 fp_np_index = np.where(y_true == 0)
 
 y_pred = model.predict(v_x)
-y_pred.to_csv('y_pred.csv', index=False)
+sub = pd.DataFrame()
+sub['sample_id'] = range(len(y_pred))
+sub['malware'] = y_pred
+sub.to_csv('y_pred.csv', index=False)
 
 auc = roc_auc_score(y_true, y_pred)
 
