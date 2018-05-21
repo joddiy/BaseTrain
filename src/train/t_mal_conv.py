@@ -161,7 +161,7 @@ class TMalConv(Train):
 
         :return:
         """
-        self.v_x, self.v_y = PPMalConv().get_v()
+        self.v_x, self.v_y = PPMalConv().read_v()
         y_true = self.v_y
         fp_np_index = np.where(y_true == 0)
 
