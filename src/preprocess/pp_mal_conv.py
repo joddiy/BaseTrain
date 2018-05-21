@@ -87,8 +87,6 @@ class PPMalConv(PreProcess):
                                     error_bad_lines=False)
             tmp_train = tmp_train["row_data"].apply(lambda x: get_bytes_array(x))
             tmp_train = pd.DataFrame(tmp_train.tolist())
-
-            tmp_train.fillna(0)
             tmp_label = pd.read_csv(label_file, header=None, error_bad_lines=False)
             if self.train is None:
                 self.train = tmp_train
