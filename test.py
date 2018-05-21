@@ -4,23 +4,11 @@
 # time: 2018/5/21 5:18 PM
 # Copyright (C) <2017>  <Joddiy Zhang>
 # ------------------------------------------------------------------------
-import hashlib
-import json
 
-import keras
-from keras import Input
-from keras.callbacks import EarlyStopping
-from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
+import numpy as np
+import pandas as pd
 from keras.models import load_model
 from sklearn.metrics import roc_auc_score, confusion_matrix
-from sklearn.model_selection import train_test_split
-import pandas as pd
-
-from src.config.config import CACHE_DIR
-from src.preprocess.pp_mal_conv import PPMalConv
-from src.train.train import Train
-from src.utils.utils import save
-import numpy as np
 
 
 def get_bytes_array(data):
@@ -55,6 +43,8 @@ y_true = v_y
 fp_np_index = np.where(y_true == 0)
 
 y_pred = model.predict(v_x)
+y_pred.to_csv('y_pred.csv', index=False)
+
 auc = roc_auc_score(y_true, y_pred)
 
 fp_np = y_pred[fp_np_index].shape[0]
