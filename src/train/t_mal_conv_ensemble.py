@@ -8,6 +8,8 @@ import hashlib
 import json
 import time
 
+from keras.models import load_model
+
 from src.config.config import *
 
 import keras
@@ -41,7 +43,7 @@ class TMalConvEnsemble(Train):
         self.summary = {
             'input': DATA_CONFIG["mal_conv"]['train'],
             'batch_size': 32,
-            'epochs': 9,
+            'epochs': 128,
             's_test_size': 0.05,
             's_random_state': 1234,
             'e_s_patience': 2,
