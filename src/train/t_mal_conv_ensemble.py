@@ -6,11 +6,13 @@
 # ------------------------------------------------------------------------
 import hashlib
 import json
+import time
+
 from src.config.config import *
 
 import keras
 from keras import Input
-from keras.callbacks import EarlyStopping
+from keras.callbacks import EarlyStopping, TensorBoard
 from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D, concatenate, Dropout
 from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
@@ -18,6 +20,7 @@ from sklearn.model_selection import train_test_split
 from src.config.config import CACHE_DIR
 from src.preprocess.pp_mal_conv import PPMalConv
 from src.train.train import Train
+from src.utils.data_generator import DataGenerator
 from src.utils.utils import save
 import numpy as np
 
@@ -42,7 +45,6 @@ class TMalConvEnsemble(Train):
             's_test_size': 0.05,
             's_random_state': 1234,
             'e_s_patience': 2,
-            'fp_rate': [0.001, 0.005, 0.01, 0.05],
             'gate_units': [
                 [32, 1, 1],
                 [32, 2, 1],
@@ -136,21 +138,27 @@ class TMalConvEnsemble(Train):
 
         self.model = self.get_model()
 
-        # x_train, x_test, y_train, y_test = train_test_split(self.train_df, self.label_df,
-        #                                                     test_size=self.get_p("s_test_size"),
-        #                                                     random_state=self.get_p("s_random_state"))
+        partition_train, partition_validation = train_test_split(range(len(self.train_df)), test_size=0.05)
+        print('Length of the train: ', len(partition_train))
+        print('Length of the validation: ', len(partition_validation))
 
+        callback = TensorBoard(log_dir='./logs/{}'.format(time.time()), batch_size=batch_size)
         # callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
+
+        # Generators
+        training_generator = DataGenerator(partition_train, self.train_df, self.label_df, batch_size)
+        validation_generator = DataGenerator(partition_validation, self.train_df, self.label_df, batch_size)
 
         self.model.compile(loss='binary_crossentropy',
                            optimizer='adam',
                            metrics=['accuracy'])
 
-        h = self.model.fit(self.train_df, self.label_df,
-                           batch_size=batch_size,
-                           epochs=epochs,  # callbacks=[callback],
-                           # validation_data=(x_test, y_test)
-                           )
+        h = self.model.fit_generator(generator=training_generator,
+                                     validation_data=validation_generator,
+                                     use_multiprocessing=True,
+                                     epochs=epochs,
+                                     workers=6,
+                                     callbacks=[callback])
         self.history = h.history
 
     def save_history(self):
@@ -158,7 +166,6 @@ class TMalConvEnsemble(Train):
 
         :return:
         """
-        # self.get_fp()
         with open(CACHE_DIR + self.p_md5 + '.json', 'w') as file_pi:
             json.dump(self.summary, file_pi)
         save(self.history, CACHE_DIR + self.p_md5)
@@ -169,41 +176,3 @@ class TMalConvEnsemble(Train):
         :return:
         """
         self.model.save(CACHE_DIR + self.p_md5 + '.h5')
-
-    def get_fp(self):
-        """
-
-        :return:
-        """
-        y_true = self.v_y
-        fp_np_index = np.where(y_true == 0)
-
-        y_pred = self.model.predict(self.v_x)
-        auc = roc_auc_score(y_true, y_pred)
-
-        fp_np = y_pred[fp_np_index].shape[0]
-        for idx in range(len(self.get_p("fp_rate"))):
-            print('\n, fp: ', self.get_p("fp_rate")[idx])
-            thre_index = int(np.ceil(fp_np - fp_np * self.get_p("fp_rate")[idx]))
-
-            sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
-            thre = sorted_pred_prob[thre_index]
-            if thre == 1:
-                thre = max(sorted_pred_prob[np.where(sorted_pred_prob != 1)])
-
-            y_pred_prob = np.vstack((y_pred.transpose(), (1 - y_pred).transpose())).transpose()
-            y_pred_prob[:, 1] = thre
-            y_pred_label = np.argmin(y_pred_prob, axis=-1)
-
-            tn, fp, fn, tp = confusion_matrix(y_true, y_pred_label).ravel()
-            fp_rate = fp / (fp + tn)
-            recall_rate = tp / (tp + fn)
-
-            self.history['fp_rate'] = str(fp_rate)
-            self.history['recall_rate'] = str(recall_rate)
-            self.history['auc'] = str(auc)
-
-            print('\n')
-            print('fp_rate:' + str(fp_rate))
-            print('recall_rate:' + str(recall_rate))
-            print('auc:' + str(auc))

@@ -48,7 +48,6 @@ class TMalConv(Train):
             'g_c_filter': 128,
             'g_c_kernel_size': 500,
             'g_c_stride': 500,
-            # 'fp_rate': [0.001, 0.005, 0.01, 0.05],
         }
 
     def generate_p(self):
@@ -153,7 +152,6 @@ class TMalConv(Train):
 
         :return:
         """
-        # self.get_fp()
         with open(CACHE_DIR + self.p_md5 + '.json', 'w') as file_pi:
             json.dump(self.summary, file_pi)
         save(self.history, CACHE_DIR + self.p_md5)
@@ -165,46 +163,3 @@ class TMalConv(Train):
         """
         self.model.save(CACHE_DIR + self.p_md5 + '.h5')
 
-    def get_fp(self):
-        """
-
-        :return:
-        """
-        self.v_x, self.v_y = PPMalConv().read_v()
-        y_true = self.v_y
-        fp_np_index = np.where(y_true == 0)
-
-        y_pred = self.model.predict(self.v_x)
-        auc = roc_auc_score(y_true, y_pred)
-
-        sub = pd.DataFrame()
-        sub['sample_id'] = range(len(y_pred))
-        sub['malware'] = y_pred
-        sub.to_csv(CACHE_DIR + self.p_md5 + '.csv', header=None, index=False)
-
-        fp_np = y_pred[fp_np_index].shape[0]
-        for idx in range(len(self.get_p("fp_rate"))):
-            print('\n, fp: ', self.get_p("fp_rate")[idx])
-            thre_index = int(np.ceil(fp_np - fp_np * self.get_p("fp_rate")[idx]))
-
-            sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
-            thre = sorted_pred_prob[thre_index]
-            if thre == 1:
-                thre = max(sorted_pred_prob[np.where(sorted_pred_prob != 1)])
-
-            y_pred_prob = np.vstack((y_pred.transpose(), (1 - y_pred).transpose())).transpose()
-            y_pred_prob[:, 1] = thre
-            y_pred_label = np.argmin(y_pred_prob, axis=-1)
-
-            tn, fp, fn, tp = confusion_matrix(y_true, y_pred_label).ravel()
-            fp_rate = fp / (fp + tn)
-            recall_rate = tp / (tp + fn)
-
-            self.history['fp_rate'] = str(fp_rate)
-            self.history['recall_rate'] = str(recall_rate)
-            self.history['auc'] = str(auc)
-
-            print('\n')
-            print('fp_rate:' + str(fp_rate))
-            print('recall_rate:' + str(recall_rate))
-            print('auc:' + str(auc))
