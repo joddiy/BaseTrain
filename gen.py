@@ -110,7 +110,7 @@ class DataGenerator(keras.utils.Sequence):
         :return:
         """
         bytes_data = bytes(map(int, data.split(",")))
-        bytes_data = crop_exceed_data(bytes_data)
+        bytes_data = self.crop_exceed_data(bytes_data)
         return [int(single_byte) for single_byte in bytes_data]
 
     def __data_generation(self, list_IDs_temp):
