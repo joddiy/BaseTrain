@@ -133,8 +133,8 @@ class TMalConv(Train):
         # callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
 
         # Generators
-        training_generator = DataGenerator(partition_train, self.train_df, self.train_df, batch_size)
-        validation_generator = DataGenerator(partition_validation, self.train_df, self.train_df, batch_size)
+        training_generator = DataGenerator(partition_train, self.train_df, self.label_df, batch_size)
+        validation_generator = DataGenerator(partition_validation, self.train_df, self.label_df, batch_size)
 
         self.model.compile(loss='binary_crossentropy',
                            optimizer='adam',
