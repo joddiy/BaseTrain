@@ -41,7 +41,7 @@ class TMalConv(Train):
         self.summary = {
             'input': DATA_CONFIG["mal_conv"]['train'],
             'batch_size': 32,
-            'epochs': 6,
+            'epochs': 128,
             's_test_size': 0.05,
             's_random_state': 5242,
             'e_s_patience': 3,
