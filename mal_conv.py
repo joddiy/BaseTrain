@@ -1,12 +1,18 @@
 # coding: utf-8
 
 # In[1]:
-
+from multiprocessing import freeze_support
 
 import pandas as pd
 from keras import Input
 from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
 from sklearn.model_selection import train_test_split
+import keras
+from os import listdir
+from os.path import isfile, join
+import numpy as np
+from keras.callbacks import TensorBoard
+import time
 
 
 # In[2]:
@@ -51,9 +57,6 @@ def get_model():
 
 
 # In[4]:
-
-
-import keras
 
 
 class DataGenerator(keras.utils.Sequence):
@@ -125,58 +128,51 @@ class DataGenerator(keras.utils.Sequence):
 
 
 # In[5]:
+if __name__ == '__main__':
+    freeze_support()
 
+    datasets = []
+    labels = []
+    input_dir = './input/'
+    # train data
+    files = [input_dir + f for f in listdir(input_dir) if isfile(join(input_dir, f)) and f[-9:] == 'train.csv']
+    for file_name in files:
+        datasets.append(pd.read_csv(file_name, header=None, sep="|", index_col=None))
+    datasets = pd.concat(datasets, ignore_index=True)[0]
 
-from os import listdir
-from os.path import isfile, join
+    # train label
+    files = [input_dir + f for f in listdir(input_dir) if isfile(join(input_dir, f)) and f[-15:] == 'train_label.csv']
+    for file_name in files:
+        labels.append(pd.read_csv(file_name, header=None, index_col=None))
+    labels = pd.concat(labels, ignore_index=True)[0]
 
-datasets = []
-labels = []
-input_dir = '/hdd1/malware_data/'
-# train data
-files = [input_dir + f for f in listdir(input_dir) if isfile(join(input_dir, f)) and f[-9:] == 'train.csv']
-for file_name in files:
-    datasets.append(pd.read_csv(file_name, header=None, sep="|", index_col=None))
-datasets = pd.concat(datasets, ignore_index=True)[0]
+    print('Length of the data: ', len(datasets))
 
-# train label
-files = [input_dir + f for f in listdir(input_dir) if isfile(join(input_dir, f)) and f[-15:] == 'train_label.csv']
-for file_name in files:
-    labels.append(pd.read_csv(file_name, header=None, index_col=None))
-labels = pd.concat(labels, ignore_index=True)[0]
+    # In[6]:
 
-print('Length of the data: ', len(datasets))
+    batch_size = 32
 
-# In[6]:
+    partition_train, partition_validation = train_test_split(range(len(datasets)), test_size=0.05)
+    print('Length of the train: ', len(partition_train))
+    print('Length of the validation: ', len(partition_validation))
 
+    # Generators
+    training_generator = DataGenerator(partition_train, datasets, labels, batch_size)
+    validation_generator = DataGenerator(partition_validation, datasets, labels, batch_size)
 
-import numpy as np
-from keras.callbacks import TensorBoard
-import time
+    tensorboard = TensorBoard(log_dir='./logs/{}'.format(time.time()), batch_size=batch_size)
 
-batch_size = 32
+    model = get_model()
+    model.compile(loss='binary_crossentropy',
+                  optimizer='adam',
+                  metrics=['accuracy'])
 
-partition_train, partition_validation = train_test_split(range(len(datasets)), test_size=0.05)
-print('Length of the train: ', len(partition_train))
-print('Length of the validation: ', len(partition_validation))
+    # Train model on dataset
+    model.fit_generator(generator=training_generator,
+                        validation_data=validation_generator,
+                        use_multiprocessing=True,
+                        epochs=9,
+                        workers=6,
+                        callbacks=[tensorboard])
 
-# Generators
-training_generator = DataGenerator(partition_train, datasets, labels, batch_size)
-validation_generator = DataGenerator(partition_validation, datasets, labels, batch_size)
-
-tensorboard = TensorBoard(log_dir='./logs/{}'.format(time.time()), batch_size=batch_size)
-
-model = get_model()
-model.compile(loss='binary_crossentropy',
-              optimizer='adam',
-              metrics=['accuracy'])
-
-# Train model on dataset
-model.fit_generator(generator=training_generator,
-                    validation_data=validation_generator,
-                    use_multiprocessing=True,
-                    epochs=9,
-                    workers=6,
-                    callbacks=[tensorboard])
-
-model.save('./models/{}.h5'.format(time.time()))
+    model.save('./models/{}.h5'.format(time.time()))
