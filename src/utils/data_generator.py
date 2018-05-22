@@ -6,6 +6,7 @@
 # ------------------------------------------------------------------------
 
 import keras
+import numpy as np
 
 
 class DataGenerator(keras.utils.Sequence):
