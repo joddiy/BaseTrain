@@ -116,13 +116,14 @@ class DataGenerator(keras.utils.Sequence):
     def __data_generation(self, list_IDs_temp):
         'Generates data containing batch_size samples'  # X : (n_samples, *dim, n_channels)
         # Initialization
-        X = np.empty((self.batch_size, self.dim), dtype=int)
-        y = np.empty(self.batch_size, dtype=int)
+        X = np.zeros((self.batch_size, self.dim), dtype=int)
+        y = np.zeros(self.batch_size, dtype=int)
 
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
-            X[i,] = self.get_bytes_array(self.datasets[ID])
+            bytes_data = self.get_bytes_array(self.datasets[ID])
+            X[i, 0:len(bytes_data)] = bytes_data
             # Store class
             y[i] = self.labels[ID]
 
@@ -185,4 +186,3 @@ model.fit_generator(generator=training_generator,
                     use_multiprocessing=True,
                     workers=6,
                     callbacks=[tensorboard])
-
