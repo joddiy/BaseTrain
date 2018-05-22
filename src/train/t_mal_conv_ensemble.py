@@ -130,6 +130,13 @@ class TMalConvEnsemble(Train):
 
         return model
 
+    def read_model(self, file_path):
+        """
+        read a model from file
+        :return:
+        """
+        return load_model(file_path)
+
     def train(self):
         batch_size = self.get_p("batch_size")
         epochs = self.get_p("epochs")

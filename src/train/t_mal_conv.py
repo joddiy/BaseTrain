@@ -13,6 +13,7 @@ import pandas as pd
 from keras import Input
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
+from keras.models import load_model
 from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
 from src.config.config import *
@@ -115,6 +116,13 @@ class TMalConv(Train):
         model.summary()
 
         return model
+
+    def read_model(self, file_path):
+        """
+        read a model from file
+        :return:
+        """
+        return load_model(file_path)
 
     def train(self):
         batch_size = self.get_p("batch_size")
