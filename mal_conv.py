@@ -11,9 +11,10 @@ import keras
 from os import listdir
 from os.path import isfile, join
 import numpy as np
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, ModelCheckpoint
 import time
-
+import warnings
+warnings.filterwarnings('ignore')
 
 # In[2]:
 
@@ -25,8 +26,8 @@ def gate_cnn(gate_cnn_input):
     :param kernel_size:
     :return:
     """
-    conv1_out = Conv1D(128, 500, strides=1)(gate_cnn_input)
-    conv2_out = Conv1D(128, 500, strides=1, activation="sigmoid")(gate_cnn_input)
+    conv1_out = Conv1D(128, 500, strides=500)(gate_cnn_input)
+    conv2_out = Conv1D(128, 500, strides=500, activation="sigmoid")(gate_cnn_input)
     merged = Multiply()([conv1_out, conv2_out])
     gate_cnn_output = GlobalMaxPooling1D()(merged)
     return gate_cnn_output
@@ -129,8 +130,6 @@ class DataGenerator(keras.utils.Sequence):
 
 # In[5]:
 if __name__ == '__main__':
-    freeze_support()
-
     datasets = []
     labels = []
     input_dir = './input/'
@@ -160,7 +159,10 @@ if __name__ == '__main__':
     training_generator = DataGenerator(partition_train, datasets, labels, batch_size)
     validation_generator = DataGenerator(partition_validation, datasets, labels, batch_size)
 
-    tensorboard = TensorBoard(log_dir='./logs/{}'.format(time.time()), batch_size=batch_size)
+    tensor_board = TensorBoard(log_dir='./logs/{}'.format(time.time()), batch_size=batch_size)
+    file_path = "./models/" + format(time.time()) + "-{epoch:02d}-{val_acc:.2f}.h5"
+    check_point = ModelCheckpoint(file_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+    callbacks_list = [tensor_board, check_point]
 
     model = get_model()
     model.compile(loss='binary_crossentropy',
@@ -171,8 +173,6 @@ if __name__ == '__main__':
     model.fit_generator(generator=training_generator,
                         validation_data=validation_generator,
                         use_multiprocessing=True,
-                        epochs=9,
+                        epochs=128,
                         workers=6,
-                        callbacks=[tensorboard])
-
-    model.save('./models/{}.h5'.format(time.time()))
+                        callbacks=callbacks_list)
