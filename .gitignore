@@ -11,6 +11,8 @@ __pycache__/
 build/
 input/
 cache/
+models/
+logs/
 .idea/
 develop-eggs/
 dist/
