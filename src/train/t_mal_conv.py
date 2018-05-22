@@ -128,7 +128,7 @@ class TMalConv(Train):
         print('Length of the train: ', len(partition_train))
         print('Length of the validation: ', len(partition_validation))
 
-        callback = TensorBoard(log_dir='./logs/{}'.format(time.time()), batch_size=batch_size)
+        callback = TensorBoard(log_dir='./logs/' + self.p_md5, batch_size=batch_size)
         # callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
 
         # Generators
@@ -162,4 +162,3 @@ class TMalConv(Train):
         :return:
         """
         self.model.save(CACHE_DIR + self.p_md5 + '.h5')
-
