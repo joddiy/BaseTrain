@@ -11,7 +11,7 @@ import time
 import keras
 import pandas as pd
 from keras import Input
-from keras.callbacks import EarlyStopping, TensorBoard
+from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
 from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
@@ -128,8 +128,11 @@ class TMalConv(Train):
         print('Length of the train: ', len(partition_train))
         print('Length of the validation: ', len(partition_validation))
 
-        callback = TensorBoard(log_dir='./logs/' + self.p_md5, batch_size=batch_size)
-        # callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
+        tensor_board = TensorBoard(log_dir='./logs/' + self.p_md5, batch_size=batch_size)
+        early_stopping = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
+        file_path = "model" + self.p_md5 + "-{epoch:02d}-{val_acc:.2f}.hdf5"
+        check_point = ModelCheckpoint(file_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+        callbacks_list = [tensor_board, check_point]
 
         # Generators
         training_generator = DataGenerator(partition_train, self.train_df, self.label_df, batch_size)
@@ -144,7 +147,7 @@ class TMalConv(Train):
                                      use_multiprocessing=True,
                                      epochs=epochs,
                                      workers=6,
-                                     callbacks=[callback])
+                                     callbacks=callbacks_list)
         self.history = h.history
 
     def save_history(self):
