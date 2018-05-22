@@ -3,15 +3,10 @@
 # In[1]:
 
 
-import keras
 import pandas as pd
 from keras import Input
-from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
-from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
-
-import numpy as np
 
 
 # In[2]:
@@ -58,7 +53,6 @@ def get_model():
 # In[4]:
 
 
-import numpy as np
 import keras
 
 
@@ -138,7 +132,7 @@ from os.path import isfile, join
 
 datasets = []
 labels = []
-input_dir = './input/'
+input_dir = '/hdd1/malware_data/'
 # train data
 files = [input_dir + f for f in listdir(input_dir) if isfile(join(input_dir, f)) and f[-9:] == 'train.csv']
 for file_name in files:
@@ -152,9 +146,8 @@ for file_name in files:
 labels = pd.concat(labels, ignore_index=True)[0]
 
 print('Length of the data: ', len(datasets))
-print('Length of the data: ', len(labels))
 
-# In[ ]:
+# In[6]:
 
 
 import numpy as np
@@ -164,6 +157,8 @@ import time
 batch_size = 32
 
 partition_train, partition_validation = train_test_split(range(len(datasets)), test_size=0.05)
+print('Length of the train: ', len(partition_train))
+print('Length of the validation: ', len(partition_validation))
 
 # Generators
 training_generator = DataGenerator(partition_train, datasets, labels, batch_size)
@@ -181,5 +176,5 @@ model.fit_generator(generator=training_generator,
                     validation_data=validation_generator,
                     use_multiprocessing=True,
                     epochs=9,
-                    # workers=6,
+                    workers=6,
                     callbacks=[tensorboard])
