@@ -23,11 +23,12 @@ from src.config.config import CACHE_DIR
 from src.preprocess.pp_mal_conv import PPMalConv
 from src.train.train import Train
 from src.utils.data_generator import DataGenerator
+from src.utils.data_generator_f import DataGeneratorF
 from src.utils.utils import save
 import numpy as np
 
 
-class TMalConvEnsemble(Train):
+class TMalConvEnsembleFeature(Train):
     """
     train of mal conv
     """
@@ -156,8 +157,8 @@ class TMalConvEnsemble(Train):
         callbacks_list = [tensor_board, check_point]
 
         # Generators
-        training_generator = DataGenerator(partition_train, self.train_df, self.label_df, batch_size)
-        validation_generator = DataGenerator(partition_validation, self.train_df, self.label_df, batch_size)
+        training_generator = DataGeneratorF(partition_train, self.train_df, self.label_df, batch_size)
+        validation_generator = DataGeneratorF(partition_validation, self.train_df, self.label_df, batch_size)
 
         self.model.compile(loss='binary_crossentropy',
                            optimizer='adam',
