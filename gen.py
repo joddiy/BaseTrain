@@ -163,7 +163,7 @@ import time
 
 batch_size = 32
 
-partition_train, partition_validation = train_test_split(range(datasets.shape[0]), test_size=0.05)
+partition_train, partition_validation = train_test_split(range(len(datasets)), test_size=0.05)
 
 # Generators
 training_generator = DataGenerator(partition_train, datasets, labels, batch_size)
