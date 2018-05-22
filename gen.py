@@ -24,8 +24,8 @@ def gate_cnn(gate_cnn_input):
     :param kernel_size:
     :return:
     """
-    conv1_out = Conv1D(32, 500, strides=500)(gate_cnn_input)
-    conv2_out = Conv1D(32, 500, strides=500, activation="sigmoid")(gate_cnn_input)
+    conv1_out = Conv1D(32, 128, strides=1)(gate_cnn_input)
+    conv2_out = Conv1D(32, 128, strides=1, activation="sigmoid")(gate_cnn_input)
     merged = Multiply()([conv1_out, conv2_out])
     gate_cnn_output = GlobalMaxPooling1D()(merged)
     return gate_cnn_output
@@ -138,17 +138,17 @@ from os.path import isfile, join
 
 datasets = []
 labels = []
-input_dir = '/hdd1/malware_data/'
+input_dir = './input/'
 # train data
 files = [input_dir + f for f in listdir(input_dir) if isfile(join(input_dir, f)) and f[-9:] == 'train.csv']
 for file_name in files:
-        datasets.append(pd.read_csv(file_name, header=None, sep="|", index_col=None))
+    datasets.append(pd.read_csv(file_name, header=None, sep="|", index_col=None))
 datasets = pd.concat(datasets, ignore_index=True)[0]
 
 # train label
 files = [input_dir + f for f in listdir(input_dir) if isfile(join(input_dir, f)) and f[-15:] == 'train_label.csv']
 for file_name in files:
-        labels.append(pd.read_csv(file_name, header=None, index_col=None))
+    labels.append(pd.read_csv(file_name, header=None, index_col=None))
 labels = pd.concat(labels, ignore_index=True)[0]
 
 print('Length of the data: ', len(datasets))
@@ -180,5 +180,6 @@ model.compile(loss='binary_crossentropy',
 model.fit_generator(generator=training_generator,
                     validation_data=validation_generator,
                     use_multiprocessing=True,
-                    workers=6,
+                    epochs=9,
+                    # workers=6,
                     callbacks=[tensorboard])
