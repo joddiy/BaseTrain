@@ -12,7 +12,7 @@ from src.config.config import *
 
 import keras
 from keras import Input
-from keras.callbacks import EarlyStopping, TensorBoard
+from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D, concatenate, Dropout
 from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
@@ -68,10 +68,8 @@ class TMalConvEnsemble(Train):
         """
         :return:
         """
-        self.train()
         self.summary_model()
-        self.save_model()
-        self.save_history()
+        self.train()
 
     def summary_model(self):
         """
@@ -142,8 +140,11 @@ class TMalConvEnsemble(Train):
         print('Length of the train: ', len(partition_train))
         print('Length of the validation: ', len(partition_validation))
 
-        callback = TensorBoard(log_dir='./logs/{}'.format(time.time()), batch_size=batch_size)
-        # callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
+        tensor_board = TensorBoard(log_dir='./logs/' + self.p_md5, batch_size=batch_size)
+        early_stopping = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
+        file_path = "./models/" + self.p_md5 + "-{epoch:02d}-{val_acc:.2f}.h5"
+        check_point = ModelCheckpoint(file_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+        callbacks_list = [tensor_board, check_point]
 
         # Generators
         training_generator = DataGenerator(partition_train, self.train_df, self.label_df, batch_size)
@@ -153,26 +154,9 @@ class TMalConvEnsemble(Train):
                            optimizer='adam',
                            metrics=['accuracy'])
 
-        h = self.model.fit_generator(generator=training_generator,
-                                     validation_data=validation_generator,
-                                     use_multiprocessing=True,
-                                     epochs=epochs,
-                                     workers=6,
-                                     callbacks=[callback])
-        self.history = h.history
-
-    def save_history(self):
-        """
-
-        :return:
-        """
-        with open(CACHE_DIR + self.p_md5 + '.json', 'w') as file_pi:
-            json.dump(self.summary, file_pi)
-        save(self.history, CACHE_DIR + self.p_md5)
-
-    def save_model(self):
-        """
-
-        :return:
-        """
-        self.model.save(CACHE_DIR + self.p_md5 + '.h5')
+        self.model.fit_generator(generator=training_generator,
+                                 validation_data=validation_generator,
+                                 use_multiprocessing=True,
+                                 epochs=epochs,
+                                 workers=6,
+                                 callbacks=callbacks_list)
