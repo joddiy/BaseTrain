@@ -128,8 +128,8 @@ class TMalConv(Train):
         print('Length of the train: ', len(partition_train))
         print('Length of the validation: ', len(partition_validation))
 
-        # callback = TensorBoard(log_dir='./logs/{}'.format(time.time()), batch_size=batch_size)
-        callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
+        callback = TensorBoard(log_dir='./logs/{}'.format(time.time()), batch_size=batch_size)
+        # callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
 
         # Generators
         training_generator = DataGenerator(partition_train, self.train_df, self.train_df, batch_size)
