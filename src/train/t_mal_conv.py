@@ -10,7 +10,7 @@ import json
 import keras
 import pandas as pd
 from keras import Input
-from keras.callbacks import EarlyStopping
+from keras.callbacks import EarlyStopping, TensorBoard
 from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
 from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
@@ -19,6 +19,7 @@ from src.config.config import *
 from src.config.config import CACHE_DIR
 from src.preprocess.pp_mal_conv import PPMalConv
 from src.train.train import Train
+from src.utils.data_generator import DataGenerator
 from src.utils.utils import save
 import numpy as np
 
@@ -32,7 +33,7 @@ class TMalConv(Train):
         self.train_df, self.label_df = PPMalConv().read_input()
         self.v_x = None
         self.v_y = None
-        self.max_len = self.train_df.shape[1]
+        self.max_len = 8192
         self.history = None
         self.model = None
         self.p_md5 = None
@@ -123,23 +124,27 @@ class TMalConv(Train):
 
         self.model = self.get_model()
 
-        # x_train, x_test, y_train, y_test = train_test_split(self.train_df, self.label_df,
-        #                                                     test_size=self.get_p("s_test_size"),
-        #                                                     random_state=self.get_p("s_random_state"))
-        # del self.train_df
-        # del self.label_df
+        partition_train, partition_validation = train_test_split(range(len(self.train_df)), test_size=0.05)
+        print('Length of the train: ', len(partition_train))
+        print('Length of the validation: ', len(partition_validation))
 
-        # callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
+        # callback = TensorBoard(log_dir='./logs/{}'.format(time.time()), batch_size=batch_size)
+        callback = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
+
+        # Generators
+        training_generator = DataGenerator(partition_train, self.train_df, self.train_df, batch_size)
+        validation_generator = DataGenerator(partition_validation, self.train_df, self.train_df, batch_size)
 
         self.model.compile(loss='binary_crossentropy',
                            optimizer='adam',
                            metrics=['accuracy'])
 
-        h = self.model.fit(self.train_df, self.label_df,
-                           batch_size=batch_size,
-                           epochs=epochs,  # callbacks=[callback],
-                           # validation_data=(x_test, y_test)
-                           )
+        h = self.model.fit_generator(generator=training_generator,
+                                     validation_data=validation_generator,
+                                     use_multiprocessing=True,
+                                     epochs=epochs,
+                                     workers=6,
+                                     callbacks=[callback])
         self.history = h.history
 
     def save_history(self):

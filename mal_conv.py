@@ -19,8 +19,8 @@ def gate_cnn(gate_cnn_input):
     :param kernel_size:
     :return:
     """
-    conv1_out = Conv1D(32, 128, strides=1)(gate_cnn_input)
-    conv2_out = Conv1D(32, 128, strides=1, activation="sigmoid")(gate_cnn_input)
+    conv1_out = Conv1D(128, 500, strides=1)(gate_cnn_input)
+    conv2_out = Conv1D(128, 500, strides=1, activation="sigmoid")(gate_cnn_input)
     merged = Multiply()([conv1_out, conv2_out])
     gate_cnn_output = GlobalMaxPooling1D()(merged)
     return gate_cnn_output
@@ -178,3 +178,5 @@ model.fit_generator(generator=training_generator,
                     epochs=9,
                     workers=6,
                     callbacks=[tensorboard])
+
+model.save('./models/{}.h5'.format(time.time()))

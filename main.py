@@ -9,7 +9,7 @@ from src.train.t_mal_conv import TMalConv
 from src.train.t_mal_conv_ensemble import TMalConvEnsemble
 
 if __name__ == '__main__':
-    t_instance = TMalConvEnsemble()
+    t_instance = TMalConv()
     t_instance.run()
     # pp_instance = PPMalConv()
     # pp_instance.read_input()
