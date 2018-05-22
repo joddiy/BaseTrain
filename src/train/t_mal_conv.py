@@ -61,8 +61,8 @@ class TMalConv(Train):
         """
         :return:
         """
-        self.train()
         self.summary_model()
+        self.train()
         self.save_model()
         self.save_history()
 
