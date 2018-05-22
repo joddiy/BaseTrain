@@ -160,7 +160,7 @@ if __name__ == '__main__':
     validation_generator = DataGenerator(partition_validation, datasets, labels, batch_size)
 
     tensor_board = TensorBoard(log_dir='./logs/{}'.format(time.time()), batch_size=batch_size)
-    file_path = "./models/" + format(time.time()) + "-{epoch:02d}-{val_acc:.2f}.h5"
+    file_path = "./models/" + format(time.time()) + "-{epoch:04d}-{val_acc:.5f}.h5"
     check_point = ModelCheckpoint(file_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
     callbacks_list = [tensor_board, check_point]
 

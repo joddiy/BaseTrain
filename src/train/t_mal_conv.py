@@ -136,7 +136,7 @@ class TMalConv(Train):
 
         tensor_board = TensorBoard(log_dir='./logs/' + self.p_md5, batch_size=batch_size)
         early_stopping = EarlyStopping("val_loss", patience=self.get_p("e_s_patience"), verbose=0, mode='auto')
-        file_path = "./models/" + self.p_md5 + "-{epoch:02d}-{val_acc:.2f}.h5"
+        file_path = "./models/" + self.p_md5 + "-{epoch:04d}-{val_acc:.5f}.h5"
         check_point = ModelCheckpoint(file_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
         callbacks_list = [tensor_board, check_point]
 
