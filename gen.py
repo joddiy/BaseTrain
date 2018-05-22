@@ -136,27 +136,23 @@ class DataGenerator(keras.utils.Sequence):
 from os import listdir
 from os.path import isfile, join
 
-datasets = None
-labels = None
+datasets = []
+labels = []
 input_dir = '/hdd1/malware_data/'
 # train data
 files = [input_dir + f for f in listdir(input_dir) if isfile(join(input_dir, f)) and f[-9:] == 'train.csv']
 for file_name in files:
-    if datasets is None:
-        datasets = pd.read_csv(file_name, header=None, sep="|", names=['row_data'], error_bad_lines=False)
-    else:
-        datasets = datasets.append(pd.read_csv(file_name, header=None, sep="|",
-                                               names=['row_data'], error_bad_lines=False))
+        datasets.append(pd.read_csv(file_name, header=None, sep="|", index_col=None))
+datasets = pd.concat(datasets, ignore_index=True)[0]
+
 # train label
 files = [input_dir + f for f in listdir(input_dir) if isfile(join(input_dir, f)) and f[-15:] == 'train_label.csv']
 for file_name in files:
-    if labels is None:
-        labels = pd.read_csv(file_name, header=None, error_bad_lines=False)
-    else:
-        labels = labels.append(pd.read_csv(file_name, header=None, error_bad_lines=False))
+        labels.append(pd.read_csv(file_name, header=None, index_col=None))
+labels = pd.concat(labels, ignore_index=True)[0]
 
-print('Shape of the train data: ', datasets.shape)
-print('Shape of the label data: ', labels.shape)
+print('Length of the data: ', len(datasets))
+print('Length of the data: ', len(labels))
 
 # In[ ]:
 
