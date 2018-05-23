@@ -17,7 +17,7 @@ if __name__ == '__main__':
     config.gpu_options.allow_growth = True
     set_session(tf.Session(config=config))
 
-    t_instance = TMalConvFeature()
+    t_instance = TMalConv()
     t_instance.run()
     # pp_instance = PPMalConv()
     # pp_instance.read_input()

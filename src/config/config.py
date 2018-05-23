@@ -29,10 +29,10 @@ DATA_CONFIG = {
             # DATA_DIR + '4_train_label.csv',
         ],
         'v_train': [
-            DATA_DIR + '2_train.csv'
+            DATA_DIR + 'test.csv'
         ],
         'v_label': [
-            DATA_DIR + '2_train_label.csv'
+            DATA_DIR + 'test_label.csv'
         ],
         'test': [
             DATA_DIR + ''
