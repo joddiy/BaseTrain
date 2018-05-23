@@ -36,14 +36,16 @@ class TAUC(Test):
         fp_np_index = np.where(y_true == 0)
         model_dir = './backup/'
 
-        model_files = [model_dir + f for f in listdir(model_dir) if isfile(join(model_dir, f)) and f[-3:] == '.h5']
+        model_files = [f for f in listdir(model_dir) if isfile(join(model_dir, f)) and f[-3:] == '.h5']
 
         for f_name in model_files:
 
-            model = load_model(f_name)
+            model = load_model(model_dir + f_name)
             y_pred = model.predict(self.v_x)
 
             auc = roc_auc_score(y_true, y_pred)
+            print('\n')
+            print(f_name)
             print('auc:' + str(auc))
 
             res = {}
@@ -66,6 +68,9 @@ class TAUC(Test):
                 recall_rate = tp / (tp + fn)
 
                 res[fp_rate] = recall_rate
+                if idx % 100 == 0:
+                    print("fp: ", fp_rate)
+                    print("recall: ", recall_rate)
 
             save(res, './src/auc/' + f_name[0:-3])
             # lists = sorted(object_file.items())
@@ -74,4 +79,3 @@ class TAUC(Test):
             # plt.ylabel('recall')
             # plt.xlabel('fp rate')
             # plt.show()
-
