@@ -17,14 +17,14 @@ DATA_CONFIG = {
     'mal_conv': {
         'using_cache': False,
         'train': [
-            DATA_DIR + '1_train.csv',
-            # DATA_DIR + '2_train.csv',
+            # DATA_DIR + '1_train.csv',
+            DATA_DIR + '2_train.csv',
             # DATA_DIR + '3_train.csv',
             # DATA_DIR + '4_train.csv',
         ],
         'label': [
-            DATA_DIR + '1_train_label.csv',
-            # DATA_DIR + '2_train_label.csv',
+            # DATA_DIR + '1_train_label.csv',
+            DATA_DIR + '2_train_label.csv',
             # DATA_DIR + '3_train_label.csv',
             # DATA_DIR + '4_train_label.csv',
         ],
