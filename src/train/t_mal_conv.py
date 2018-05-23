@@ -41,6 +41,7 @@ class TMalConv(Train):
         self.p_md5 = None
         self.summary = {
             'input': DATA_CONFIG["mal_conv"]['train'],
+            'time':time.time(),
             'batch_size': 32,
             'epochs': 128,
             's_test_size': 0.05,
