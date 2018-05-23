@@ -82,14 +82,32 @@ class PPMalConv(PreProcess):
         return self.train, self.label
 
     def read_v(self):
-        tmp_v = pd.read_csv(self.config["v_train"], header=None, sep="|", names=['row_data'],
+        tmp_v = pd.read_csv(self.config["v_train"][0], header=None, sep="|", names=['row_data'],
                             error_bad_lines=False)
         tmp_v = tmp_v["row_data"].apply(lambda x: get_bytes_array(x))
         self.v_x = pd.DataFrame(tmp_v.tolist())
-        self.v_y = pd.read_csv(self.config["v_label"], header=None, error_bad_lines=False)
+        self.v_y = pd.read_csv(self.config["v_label"][0], header=None, error_bad_lines=False)
         del tmp_v
         print('Shape of the v_x data: ', self.v_x.shape)
         print('Shape of the v_y data: ', self.v_y.shape)
+        return self.v_x, self.v_y
+
+    def get_v(self):
+        """
+        read test data
+        :return:
+        """
+        # train data
+        for file_name in self.config["v_train"]:
+            self.v_x.append(pd.read_csv(file_name, header=None, sep="|", index_col=None))
+        self.v_x = pd.concat(self.v_x, ignore_index=True)[0]
+
+        # train label
+        for file_name in self.config["v_label"]:
+            self.v_y.append(pd.read_csv(file_name, header=None, index_col=None))
+        self.v_y = pd.concat(self.v_y, ignore_index=True)[0]
+
+        print('Length of the data: ', len(self.v_x))
         return self.v_x, self.v_y
 
     def feature_engineering(self):

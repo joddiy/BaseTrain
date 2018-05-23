@@ -28,9 +28,15 @@ DATA_CONFIG = {
             # DATA_DIR + '3_train_label.csv',
             # DATA_DIR + '4_train_label.csv',
         ],
-        'v_train': DATA_DIR + 'test.csv',
-        'v_label': DATA_DIR + 'test_label.csv',
-        'test': DATA_DIR + '',
+        'v_train': [
+            DATA_DIR + 'test.csv'
+        ],
+        'v_label': [
+            DATA_DIR + 'test_label.csv'
+        ],
+        'test': [
+            DATA_DIR + ''
+        ],
         'cleaned_data': CACHE_DIR + 'mal_conv.h5',
     }
 }
