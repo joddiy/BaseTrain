@@ -69,6 +69,7 @@ class TAUC(Test):
 
                 res[fp_rate] = recall_rate
                 if idx % 100 == 0:
+                    print('thre:', thre)
                     print("fp: ", fp_rate)
                     print("recall: ", recall_rate)
 
