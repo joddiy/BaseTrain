@@ -52,7 +52,7 @@ class TAUC(Test):
 
             for idx in range(100, 1000):
                 fp_np = y_pred[fp_np_index].shape[0]
-                thre_index = int(np.ceil(fp_np - fp_np * idx / 10000))
+                thre_index = int(np.ceil(fp_np - fp_np * idx / 100000))
 
                 sorted_pred_prob = np.sort(y_pred[fp_np_index], axis=0)
                 thre = sorted_pred_prob[thre_index]
