@@ -11,7 +11,7 @@ from src.train.t_mal_conv_ensemble_feature import TMalConvEnsembleFeature
 from src.train.t_mal_conv_feature import TMalConvFeature
 from keras.backend.tensorflow_backend import set_session
 import tensorflow as tf
-s
+
 if __name__ == '__main__':
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
