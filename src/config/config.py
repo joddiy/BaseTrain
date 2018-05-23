@@ -9,7 +9,7 @@ import os
 
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__ + "/../../"))
 
-DATA_DIR = '/hdd1/malware_data/'
+DATA_DIR = './input/'  # '/hdd1/malware_data/'
 
 CACHE_DIR = PROJECT_DIR + '/cache/'
 
