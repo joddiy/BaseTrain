@@ -22,7 +22,7 @@ class TAUCF(Test):
         """
         init
         """
-        self.v_x, self.v_y = PPMalConv().read_v()
+        self.v_x, self.v_y = PPMalConv().read_v_f()
 
     def predict(self):
         pass
