@@ -43,7 +43,7 @@ class TMalConv(Train):
             'input': DATA_CONFIG["mal_conv"]['train'],
             'time':time.time(),
             'batch_size': 32,
-            'epochs': 128,
+            'epochs': 16,
             's_test_size': 0.05,
             's_random_state': 5242,
             'e_s_patience': 3,
