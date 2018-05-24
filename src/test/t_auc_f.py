@@ -17,7 +17,7 @@ from src.test.test import Test
 from src.utils.utils import save
 
 
-class TAUC(Test):
+class TAUCF(Test):
     def __init__(self):
         """
         init
