@@ -111,7 +111,7 @@ class TMalConv(Train):
         merged = self.gate_cnn(embedding_out)
 
         dense_out = Dense(128)(merged)
-        net_output = Dense(1, activation='hard_sigmoid')(dense_out)
+        net_output = Dense(1, activation='sigmoid')(dense_out)
 
         model = keras.models.Model(inputs=net_input, outputs=net_output)
         model.summary()
