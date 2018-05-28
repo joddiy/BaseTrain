@@ -44,7 +44,7 @@ class TAUCLgbm(Test):
             model = lgb.Booster(model_file=model_dir + f_name)
             y_pred = model.predict(self.v_x)
             y_pred = DataFrame(y_pred)
-            
+            print("shape", y_pred.shape)
             auc = roc_auc_score(y_true, y_pred)
             print('\n')
             print(f_name)
