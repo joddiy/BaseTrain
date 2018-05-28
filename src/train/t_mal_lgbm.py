@@ -9,7 +9,7 @@ import hashlib
 import json
 import time
 
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, accuracy_score
 from sklearn.model_selection import train_test_split
 import lightgbm as lgb
 
@@ -99,4 +99,5 @@ class TMalLgbm(Train):
         file_path = "./models/" + self.p_md5
         # for i in range(model.best_iteration):
         model.save_model(file_path + ".h5", num_iteration=model.best_iteration)
-        print("full score : %.5f" % roc_auc_score(y_test.values.ravel(), y_pred))
+        print("auc score : %.5f" % roc_auc_score(y_test.values.ravel(), y_pred))
+        print("accuracy score : %.5f" % accuracy_score(y_test.values.ravel(), y_pred))
