@@ -154,7 +154,7 @@ class PPMalConv(PreProcess):
         tmp_v = pd.read_csv(self.config["train"][0], header=None, sep="|", names=['row_data'],
                             error_bad_lines=False)
         tmp_v = tmp_v["row_data"].apply(lambda x: get_bytes_array(x))
-        self.train = pd.DataFrame(tmp_v.tolist())
+        self.train = pd.DataFrame(tmp_v.tolist(), dtype=int)
         self.label = pd.read_csv(self.config["label"][0], header=None, error_bad_lines=False)
         del tmp_v
         print('Shape of the train data: ', self.train.shape)
