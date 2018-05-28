@@ -41,7 +41,7 @@ class TAUCLgbm(Test):
         for f_name in model_files:
 
             model = lgb.Booster(model_file=model_dir + f_name)
-            y_pred = model.predict(self.v_x.values.ravel())
+            y_pred = model.predict(self.v_x)
 
             auc = roc_auc_score(y_true, y_pred)
             print('\n')
