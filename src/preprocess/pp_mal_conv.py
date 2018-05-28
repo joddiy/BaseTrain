@@ -164,7 +164,7 @@ class PPMalConv(PreProcess):
     def read_t_f(self):
         tmp_v = pd.read_csv(self.config["train"][0], header=None, sep="|", names=['row_data'],
                             error_bad_lines=False)
-        self.train = np.zeros((tmp_v.shape[0], 8192), dtype=int)
+        self.train = np.zeros((tmp_v.shape[0], 3584), dtype=int)
         self.label = pd.read_csv(self.config["label"][0], header=None, error_bad_lines=False)
         print('Shape of the train data: ', self.train.shape)
         print('Shape of the label data: ', self.label.shape)
@@ -172,7 +172,10 @@ class PPMalConv(PreProcess):
         for i, item in enumerate(tmp_v["row_data"]):
             # Store sample
             bytes_data = get_fixed_head(item)
-            self.train[i, 0:len(bytes_data)] = bytes_data
+            if len(bytes_data) > 3584:
+                self.train[i, :] = bytes_data[:3584]
+            else:
+                self.train[i, 0:len(bytes_data)] = bytes_data
         return self.train, self.label
 
     def read_v(self):
@@ -197,7 +200,10 @@ class PPMalConv(PreProcess):
         for i, item in enumerate(tmp_v["row_data"]):
             # Store sample
             bytes_data = get_fixed_head(item)
-            self.v_x[i, 0:len(bytes_data)] = bytes_data
+            if len(bytes_data) > 3584:
+                self.train[i, :] = bytes_data[:3584]
+            else:
+                self.train[i, 0:len(bytes_data)] = bytes_data
 
         return self.v_x, self.v_y
 
