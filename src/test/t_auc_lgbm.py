@@ -52,7 +52,7 @@ class TAUCLgbm(Test):
             print('\n')
             print(f_name)
             print('auc:' + str(auc))
-
+            res = {}
 
             for idx in range(100, 501):
                 fp_np = y_pred[fp_np_index].shape[0]
