@@ -15,6 +15,7 @@ from src.preprocess.pp_mal_conv import PPMalConv
 from src.test.test import Test
 from src.utils.utils import save
 import lightgbm as lgb
+from pandas import DataFrame
 
 
 class TAUCLgbm(Test):
@@ -42,7 +43,8 @@ class TAUCLgbm(Test):
 
             model = lgb.Booster(model_file=model_dir + f_name)
             y_pred = model.predict(self.v_x)
-
+            y_pred = DataFrame(y_pred)
+            
             auc = roc_auc_score(y_true, y_pred)
             print('\n')
             print(f_name)
