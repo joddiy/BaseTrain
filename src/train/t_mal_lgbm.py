@@ -96,7 +96,6 @@ class TMalLgbm(Train):
         valid_sets = lgb.Dataset(x_test, y_test.values.ravel())
         model = lgb.train(self.get_p("params"), lgbm_dataset, 1000, valid_sets=valid_sets, early_stopping_rounds=10)
         file_path = "./models/" + self.p_md5
-        y_test = y_test.values.ravel()
         # for i in range(0, model.best_iteration, 100):
         #     y_pred = model.predict(x_test, num_iteration=i)
         #     loss = log_loss(y_test, y_pred)
@@ -105,7 +104,7 @@ class TMalLgbm(Train):
         y_pred = model.predict(x_test)
         loss = log_loss(y_test, y_pred)
         auc = roc_auc_score(y_test, y_pred)
-        acc = accuracy_score(y_test, y_pred)
+        acc = accuracy_score(y_test, (y_pred > 0.5).astype(int))
         model.save_model(file_path + "-%04d-%.5f-%.5f.h5" % (model.best_iteration, loss, acc),
                          num_iteration=model.best_iteration)
         print("auc score : %.5f" % auc)
