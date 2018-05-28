@@ -15,6 +15,7 @@ from src.preprocess.pp_mal_conv import PPMalConv
 from src.test.test import Test
 from src.utils.utils import save
 import lightgbm as lgb
+from pandas import DataFrame
 
 
 class TAUCLgbm(Test):
@@ -22,7 +23,7 @@ class TAUCLgbm(Test):
         """
         init
         """
-        self.v_x, self.v_y = PPMalConv().read_v()
+        self.v_x, self.v_y = PPMalConv().read_v_f()
 
     def predict(self):
         pass

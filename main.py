@@ -10,6 +10,8 @@ from src.train.t_mal_conv_ensemble import TMalConvEnsemble
 from src.train.t_mal_conv_ensemble_feature import TMalConvEnsembleFeature
 from src.train.t_mal_conv_feature import TMalConvFeature
 from src.train.t_mal_lgbm import TMalLgbm
+from src.train.t_mal_lgbm_feature import TMalLgbmF
+
 
 from keras.backend.tensorflow_backend import set_session
 import tensorflow as tf
@@ -20,7 +22,7 @@ if __name__ == '__main__':
     config.gpu_options.allow_growth = True
     set_session(tf.Session(config=config))
 
-    t_instance = TMalLgbm()
+    t_instance = TMalLgbmF()
     t_instance.run()
     # pp_instance = PPMalConv()
     # pp_instance.read_input()
