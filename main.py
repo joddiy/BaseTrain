@@ -22,7 +22,7 @@ if __name__ == '__main__':
     config.gpu_options.allow_growth = True
     set_session(tf.Session(config=config))
 
-    t_instance = TMalLgbm()
+    t_instance = TMalLgbmF()
     t_instance.run()
     # pp_instance = PPMalConv()
     # pp_instance.read_input()
