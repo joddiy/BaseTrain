@@ -150,6 +150,17 @@ class PPMalConv(PreProcess):
         print('Length of the data: ', len(self.train))
         return self.train, self.label
 
+    def read_t(self):
+        tmp_v = pd.read_csv(self.config["train"][0], header=None, sep="|", names=['row_data'],
+                            error_bad_lines=False)
+        tmp_v = tmp_v["row_data"].apply(lambda x: get_bytes_array(x))
+        self.train = pd.DataFrame(tmp_v.tolist())
+        self.label = pd.read_csv(self.config["label"][0], header=None, error_bad_lines=False)
+        del tmp_v
+        print('Shape of the train data: ', self.train.shape)
+        print('Shape of the label data: ', self.label.shape)
+        return self.train, self.label
+
     def read_v(self):
         tmp_v = pd.read_csv(self.config["v_train"][0], header=None, sep="|", names=['row_data'],
                             error_bad_lines=False)
