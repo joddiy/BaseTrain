@@ -17,7 +17,7 @@ from src.utils.utils import save
 import lightgbm as lgb
 
 
-class TAUC(Test):
+class TAUCLgbm(Test):
     def __init__(self):
         """
         init
@@ -40,8 +40,8 @@ class TAUC(Test):
 
         for f_name in model_files:
 
-            model = lgb.(model_dir + f_name)
-            y_pred = model.predict(self.v_x)
+            model = lgb.Booster(model_file=model_dir + f_name)
+            y_pred = model.predict(self.v_x.values.ravel())
 
             auc = roc_auc_score(y_true, y_pred)
             print('\n')

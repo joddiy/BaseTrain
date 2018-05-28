@@ -7,6 +7,7 @@
 from src.preprocess.pp_mal_conv import PPMalConv
 from src.test.t_auc import TAUC
 from src.test.t_auc_f import TAUCF
+from src.test.t_auc_lgbm import TAUCLgbm
 from src.train.t_mal_conv import TMalConv
 from src.train.t_mal_conv_ensemble import TMalConvEnsemble
 from src.train.t_mal_conv_ensemble_feature import TMalConvEnsembleFeature
@@ -18,7 +19,7 @@ if __name__ == '__main__':
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     set_session(tf.Session(config=config))
-    t_instance = TAUC()
+    t_instance = TAUCLgbm()
     t_instance.run()
     # pp_instance = PPMalConv()
     # pp_instance.read_input()
