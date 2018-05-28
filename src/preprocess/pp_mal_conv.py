@@ -201,9 +201,9 @@ class PPMalConv(PreProcess):
             # Store sample
             bytes_data = get_fixed_head(item)
             if len(bytes_data) > 2048:
-                self.train[i, :] = bytes_data[:2048]
+                self.v_x[i, :] = bytes_data[:2048]
             else:
-                self.train[i, 0:len(bytes_data)] = bytes_data
+                self.v_x[i, 0:len(bytes_data)] = bytes_data
 
         return self.v_x, self.v_y
 
