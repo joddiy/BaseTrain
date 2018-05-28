@@ -93,8 +93,10 @@ class TMalLgbm(Train):
         del self.train_df, self.label_df
 
         lgbm_dataset = lgb.Dataset(x_train, y_train.values.ravel())
-        model = lgb.train(self.get_p("params"), lgbm_dataset)
+        valid_sets = lgb.Dataset(x_test, y_test.values.ravel())
+        model = lgb.train(self.get_p("params"), lgbm_dataset, 100, valid_sets=valid_sets, early_stopping_rounds=10)
         y_pred = model.predict(x_test)
-        file_path = "./models/" + self.p_md5 + ".h5"
-        model.save_model(file_path)
+        file_path = "./models/" + self.p_md5
+        for i in range(model.best_iteration):
+            model.save_model(file_path + "_" + i + ".h5", num_iteration=model.best_iteration)
         print("full score : %.5f" % roc_auc_score(y_test.values.ravel(), y_pred))
