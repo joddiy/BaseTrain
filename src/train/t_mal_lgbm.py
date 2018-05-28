@@ -92,9 +92,9 @@ class TMalLgbm(Train):
                                                             random_state=self.get_p("s_random_state"))
         del self.train_df, self.label_df
 
-        lgbm_dataset = lgb.Dataset(x_train, y_train.ravel())
+        lgbm_dataset = lgb.Dataset(x_train, y_train.values.ravel())
         model = lgb.train(self.get_p("params"), lgbm_dataset)
         y_pred = model.predict(x_test)
         file_path = "./models/" + self.p_md5 + ".h5"
         model.save_model(file_path)
-        print("full score : %.5f" % roc_auc_score(y_test.ravel(), y_pred))
+        print("full score : %.5f" % roc_auc_score(y_test.values.ravel(), y_pred))
