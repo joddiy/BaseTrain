@@ -26,7 +26,7 @@ class TMalLgbm(Train):
 
     def __init__(self):
         self.train_df, self.label_df = PPMalConv().read_t()
-        self.v_x, self.v_y = PPMalConv().read_v()
+        # self.v_x, self.v_y = PPMalConv().read_v()
         self.max_len = 8192
         self.history = None
         self.model = None
