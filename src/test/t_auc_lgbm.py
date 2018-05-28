@@ -42,15 +42,17 @@ class TAUCLgbm(Test):
         for f_name in model_files:
 
             model = lgb.Booster(model_file=model_dir + f_name)
-            y_pred = model.predict(self.v_x)
-            y_pred = DataFrame(y_pred)
+            y_p = model.predict(self.v_x)
+            y_pred = np.zeros((len(y_p), 1))
+            for i in range(len(y_p)):
+                y_pred[i, 0] = y_p[i]
+
             print("shape", y_pred.shape)
             auc = roc_auc_score(y_true, y_pred)
             print('\n')
             print(f_name)
             print('auc:' + str(auc))
 
-            res = {}
 
             for idx in range(100, 501):
                 fp_np = y_pred[fp_np_index].shape[0]
