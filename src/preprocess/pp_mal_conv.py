@@ -24,9 +24,9 @@ def get_bytes_array(data):
 
 
 def crop_exceed_data(data):
-    if len(data) <= 8192:
+    if len(data) <= 3584:
         return data
-    return data[0: 8192]
+    return data[0: 3584]
 
 
 def reverse_bytes(original):
