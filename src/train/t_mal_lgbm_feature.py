@@ -94,7 +94,7 @@ class TMalLgbmF(Train):
 
         lgbm_dataset = lgb.Dataset(x_train, y_train.values.ravel())
         valid_sets = lgb.Dataset(x_test, y_test.values.ravel())
-        model = lgb.train(self.get_p("params"), lgbm_dataset, 1000, valid_sets=valid_sets, early_stopping_rounds=10)
+        model = lgb.train(self.get_p("params"), lgbm_dataset, 100000, valid_sets=valid_sets, early_stopping_rounds=10)
         file_path = "./models/" + self.p_md5
         # for i in range(0, model.best_iteration, 100):
         #     y_pred = model.predict(x_test, num_iteration=i)
