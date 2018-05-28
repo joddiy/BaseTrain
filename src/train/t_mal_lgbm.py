@@ -98,5 +98,5 @@ class TMalLgbm(Train):
         y_pred = model.predict(x_test)
         file_path = "./models/" + self.p_md5
         # for i in range(model.best_iteration):
-        model.save_model(file_path + "_%d.h5" % i, num_iteration=model.best_iteration)
+        model.save_model(file_path + ".h5", num_iteration=model.best_iteration)
         print("full score : %.5f" % roc_auc_score(y_test.values.ravel(), y_pred))
