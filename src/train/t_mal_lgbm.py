@@ -9,7 +9,7 @@ import hashlib
 import json
 import time
 
-from sklearn.metrics import roc_auc_score, accuracy_score
+from sklearn.metrics import roc_auc_score, accuracy_score, log_loss
 from sklearn.model_selection import train_test_split
 import lightgbm as lgb
 
@@ -97,7 +97,10 @@ class TMalLgbm(Train):
         model = lgb.train(self.get_p("params"), lgbm_dataset, 1000, valid_sets=valid_sets, early_stopping_rounds=10)
         y_pred = model.predict(x_test)
         file_path = "./models/" + self.p_md5
-        # for i in range(model.best_iteration):
-        model.save_model(file_path + ".h5", num_iteration=model.best_iteration)
-        print("auc score : %.5f" % roc_auc_score(y_test.values.ravel(), y_pred))
-        print("accuracy score : %.5f" % accuracy_score(y_test.values.ravel(), y_pred))
+        loss = log_loss(y_test, y_pred)
+        auc = roc_auc_score(y_test, y_pred)
+        acc = accuracy_score(y_test, y_pred)
+        model.save_model(file_path + "-%04d-%.5f-%.5f.h5" % (model.best_iteration, loss, acc),
+                         num_iteration=model.best_iteration)
+        print("auc score : %.5f" % auc)
+        print("accuracy score : %.5f" % acc)
