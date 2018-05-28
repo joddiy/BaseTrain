@@ -37,12 +37,7 @@ class TMalLgbm(Train):
             's_test_size': 0.05,
             's_random_state': 5242,
             'params': {
-                'learning_rate': 0.75,
-                'application': 'regression',
-                'max_depth': 3,
-                'num_leaves': 100,
-                'verbosity': -1,
-                'metric': 'RMSE',
+                'application': 'binary',
             },
         }
 
@@ -95,10 +90,11 @@ class TMalLgbm(Train):
         x_train, x_test, y_train, y_test = train_test_split(self.train_df, self.label_df,
                                                             test_size=self.get_p("s_test_size"),
                                                             random_state=self.get_p("s_random_state"))
+        del self.train_df, self.label_df
 
-        lgbm_dataset = lgb.Dataset(x_train, y_train)
-        model = lgb.train({"application": "binary"}, lgbm_dataset)
+        lgbm_dataset = lgb.Dataset(x_train, y_train.ravel())
+        model = lgb.train(self.get_p("params"), lgbm_dataset)
         y_pred = model.predict(x_test)
         file_path = "./models/" + self.p_md5 + ".h5"
         model.save_model(file_path)
-        print("full score : %.5f" % roc_auc_score(y_test, y_pred))
+        print("full score : %.5f" % roc_auc_score(y_test.ravel(), y_pred))
