@@ -89,11 +89,11 @@ def get_fixed_head(data):
     # append all above parts
     fixed_head = mz_head + ms_dos_sub + rich_sign + pe_head + image_optional_head + data_directory
     # for each sections, just get the non-zero value
-    number_of_sections = convert_int(reverse_bytes(pe_head[6:8]))
-    for offset in range(number_of_sections):
-        offset_sections_start = image_optional_head_end + 128 + 40 * offset
-        fixed_head += other_head[offset_sections_start: offset_sections_start + 28] + \
-                      other_head[offset_sections_start + 36:offset_sections_start + 40]
+    # number_of_sections = convert_int(reverse_bytes(pe_head[6:8]))
+    # for offset in range(number_of_sections):
+    #     offset_sections_start = image_optional_head_end + 128 + 40 * offset
+    #     fixed_head += other_head[offset_sections_start: offset_sections_start + 28] + \
+    #                   other_head[offset_sections_start + 36:offset_sections_start + 40]
     return [int(single_byte) for single_byte in fixed_head]
 
 
@@ -112,6 +112,7 @@ class PPMalConv(PreProcess):
         self.test = None
         self.v_y = None
         self.v_x = None
+        self.max_len = 1024
 
     def run(self):
         """
@@ -164,7 +165,7 @@ class PPMalConv(PreProcess):
     def read_t_f(self):
         tmp_v = pd.read_csv(self.config["train"][0], header=None, sep="|", names=['row_data'],
                             error_bad_lines=False)
-        self.train = np.zeros((tmp_v.shape[0], 8192), dtype=int)
+        self.train = np.zeros((tmp_v.shape[0], self.max_len), dtype=int)
         self.label = pd.read_csv(self.config["label"][0], header=None, error_bad_lines=False)
         print('Shape of the train data: ', self.train.shape)
         print('Shape of the label data: ', self.label.shape)
@@ -172,8 +173,8 @@ class PPMalConv(PreProcess):
         for i, item in enumerate(tmp_v["row_data"]):
             # Store sample
             bytes_data = get_fixed_head(item)
-            if len(bytes_data) > 8192:
-                self.train[i, :] = bytes_data[:8192]
+            if len(bytes_data) > self.max_len:
+                self.train[i, :] = bytes_data[:self.max_len]
             else:
                 self.train[i, 0:len(bytes_data)] = bytes_data
         return self.train, self.label
@@ -192,7 +193,7 @@ class PPMalConv(PreProcess):
     def read_v_f(self):
         tmp_v = pd.read_csv(self.config["v_train"][0], header=None, sep="|", names=['row_data'],
                             error_bad_lines=False)
-        self.v_x = np.zeros((tmp_v.shape[0], 8192), dtype=int)
+        self.v_x = np.zeros((tmp_v.shape[0], self.max_len), dtype=int)
         self.v_y = pd.read_csv(self.config["v_label"][0], header=None, error_bad_lines=False)
         print('Shape of the v_x data: ', self.v_x.shape)
         print('Shape of the v_y data: ', self.v_y.shape)
@@ -200,8 +201,8 @@ class PPMalConv(PreProcess):
         for i, item in enumerate(tmp_v["row_data"]):
             # Store sample
             bytes_data = get_fixed_head(item)
-            if len(bytes_data) > 8192:
-                self.v_x[i, :] = bytes_data[:8192]
+            if len(bytes_data) > self.max_len:
+                self.v_x[i, :] = bytes_data[:self.max_len]
             else:
                 self.v_x[i, 0:len(bytes_data)] = bytes_data
 
