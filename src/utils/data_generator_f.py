@@ -136,7 +136,11 @@ class DataGeneratorF(keras.utils.Sequence):
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
             bytes_data = self.get_fixed_head(self.datasets[ID])
-            X[i, 0:len(bytes_data)] = bytes_data
+            if len(bytes_data) > self.dim:
+                X[i, :] = bytes_data[:self.dim]
+            else:
+                X[i, 0:len(bytes_data)] = bytes_data
+
             # Store class
             y[i] = self.labels[ID]
 
