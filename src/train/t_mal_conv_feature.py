@@ -36,7 +36,7 @@ class TMalConvFeature(Train):
         self.train_df, self.label_df = PPMalConv().read_input()
         self.v_x = None
         self.v_y = None
-        self.max_len = 8192
+        self.max_len = 1024
         self.history = None
         self.model = None
         self.p_md5 = None
@@ -143,8 +143,9 @@ class TMalConvFeature(Train):
         callbacks_list = [tensor_board, check_point]
 
         # Generators
-        training_generator = DataGeneratorF(partition_train, self.train_df, self.label_df, batch_size)
-        validation_generator = DataGeneratorF(partition_validation, self.train_df, self.label_df, batch_size)
+        training_generator = DataGeneratorF(partition_train, self.train_df, self.label_df, batch_size, dim=self.max_len)
+        validation_generator = DataGeneratorF(partition_validation, self.train_df, self.label_df, batch_size,
+                                              dim=self.max_len)
 
         self.model.compile(loss='binary_crossentropy',
                            optimizer='adam',
