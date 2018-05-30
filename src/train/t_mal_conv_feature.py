@@ -23,7 +23,7 @@ from src.preprocess.pp_mal_conv import PPMalConv
 from src.train.train import Train
 from src.utils.data_generator import DataGenerator
 from src.utils.data_generator_f import DataGeneratorF
-from src.utils.utils import save
+from src.utils.utils import save, RocAucEvaluation
 import numpy as np
 
 
@@ -43,7 +43,7 @@ class TMalConvFeature(Train):
         self.summary = {
             'input': DATA_CONFIG["mal_conv"]['train'],
             'time': time.time(),
-            'batch_size': 32,
+            'batch_size': 256,
             'epochs': 16,
             's_test_size': 0.05,
             's_random_state': 5242,
