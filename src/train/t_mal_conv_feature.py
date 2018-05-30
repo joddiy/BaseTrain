@@ -49,8 +49,8 @@ class TMalConvFeature(Train):
             's_random_state': 5242,
             'e_s_patience': 3,
             'g_c_filter': 128,
-            'g_c_kernel_size': 500,
-            'g_c_stride': 500,
+            'g_c_kernel_size': 128,
+            'g_c_stride': 1,
         }
 
     def generate_p(self):

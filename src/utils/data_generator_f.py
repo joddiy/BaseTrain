@@ -12,7 +12,7 @@ import numpy as np
 class DataGeneratorF(keras.utils.Sequence):
     'Generates data for Keras'
 
-    def __init__(self, list_IDs, datasets, labels, batch_size=32, dim=8192, shuffle=True):
+    def __init__(self, list_IDs, datasets, labels, batch_size=32, dim=1024, shuffle=True):
         'Initialization'
         self.dim = dim
         self.batch_size = batch_size
@@ -95,10 +95,10 @@ class DataGeneratorF(keras.utils.Sequence):
         :return:
         """
         bytes_data = bytes(map(int, data.split(",")))
-        # mz head
-        mz_head = bytes_data[0:64]
-        # dos sub
-        ms_dos_sub = bytes_data[64:128]
+        # # mz head
+        # mz_head = bytes_data[0:64]
+        # # dos sub
+        # ms_dos_sub = bytes_data[64:128]
         # decode rich sign
         rich_sign_end = bytes_data[128:].find(b'\x52\x69\x63\x68') + 136
         rich_sign = self.decode_rich_sign(bytes_data[128:rich_sign_end])
@@ -115,13 +115,15 @@ class DataGeneratorF(keras.utils.Sequence):
         # data directory
         data_directory = other_head[image_optional_head_end: image_optional_head_end + 128]
         # append all above parts
-        fixed_head = mz_head + ms_dos_sub + rich_sign + pe_head + image_optional_head + data_directory
+        # fixed_head = mz_head + ms_dos_sub + rich_sign + pe_head + image_optional_head + data_directory
+        fixed_head = rich_sign + pe_head + image_optional_head + data_directory
         # for each sections, just get the non-zero value
         number_of_sections = self.convert_int(self.reverse_bytes(pe_head[6:8]))
         for offset in range(number_of_sections):
             offset_sections_start = image_optional_head_end + 128 + 40 * offset
-            fixed_head += other_head[offset_sections_start: offset_sections_start + 28] + \
-                          other_head[offset_sections_start + 36:offset_sections_start + 40]
+            # fixed_head += other_head[offset_sections_start: offset_sections_start + 28] + \
+            #               other_head[offset_sections_start + 36:offset_sections_start + 40]
+            fixed_head += other_head[offset_sections_start + 36:offset_sections_start + 40]
         return [int(single_byte) for single_byte in fixed_head]
 
     def __data_generation(self, list_IDs_temp):
