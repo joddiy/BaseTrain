@@ -50,7 +50,7 @@ class TAUCF(Test):
 
             res = {}
 
-            for idx in range(100, 501):
+            for idx in range(100, 500, 100):
                 fp_np = y_pred[fp_np_index].shape[0]
                 thre_index = int(np.ceil(fp_np - fp_np * idx / 100000))
 
