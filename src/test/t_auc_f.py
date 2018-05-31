@@ -50,7 +50,7 @@ class TAUCF(Test):
 
             res = {}
 
-            for idx in range(100, 500, 100):
+            for idx in range(100, 101, 100):
                 fp_np = y_pred[fp_np_index].shape[0]
                 thre_index = int(np.ceil(fp_np - fp_np * idx / 100000))
 
@@ -70,7 +70,7 @@ class TAUCF(Test):
                 res[fp_rate] = recall_rate
                 if idx % 100 == 0:
                     print('thre:', thre)
-                    print("fp: ", fp_rate)
+                    # print("fp: ", fp_rate)
                     print("recall: ", recall_rate)
 
             save(res, './src/auc/' + f_name[0:-3])
