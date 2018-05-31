@@ -99,7 +99,8 @@ class TMalConvEnsembleFeature(Train):
         :param gate_cnn_input:
         :return:
         """
-        conv1_out = Conv1D(gate_unit_config[0], gate_unit_config[1], strides=gate_unit_config[2])(gate_cnn_input)
+        conv1_out = Conv1D(gate_unit_config[0], gate_unit_config[1], strides=gate_unit_config[2], padding="same")(
+            gate_cnn_input)
         # conv2_out = Conv1D(gate_unit_config[0], gate_unit_config[1], strides=gate_unit_config[2], activation="sigmoid")(
         #     gate_cnn_input)
         # merged = Multiply()([conv1_out, conv2_out])
