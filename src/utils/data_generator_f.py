@@ -100,8 +100,8 @@ class DataGeneratorF(keras.utils.Sequence):
         # # dos sub
         # ms_dos_sub = bytes_data[64:128]
         # decode rich sign
-        rich_sign_end = bytes_data[128:].find(b'\x52\x69\x63\x68') + 136
-        rich_sign = self.decode_rich_sign(bytes_data[128:rich_sign_end])
+        # rich_sign_end = bytes_data[128:].find(b'\x52\x69\x63\x68') + 136
+        # rich_sign = self.decode_rich_sign(bytes_data[128:rich_sign_end])
         # pe head
         pe_head_start = bytes_data[128:].find(b'\x50\x45\x00\x00') + 128
         pe_head = bytes_data[pe_head_start:pe_head_start + 24]
@@ -124,7 +124,6 @@ class DataGeneratorF(keras.utils.Sequence):
             # fixed_head += other_head[offset_sections_start: offset_sections_start + 28] + \
             #               other_head[offset_sections_start + 36:offset_sections_start + 40]
             fixed_head += other_head[offset_sections_start + 36:offset_sections_start + 40]
-        fixed_head += rich_sign
         return [int(single_byte) for single_byte in fixed_head]
 
     def __data_generation(self, list_IDs_temp):
