@@ -116,7 +116,7 @@ class DataGeneratorF(keras.utils.Sequence):
         data_directory = other_head[image_optional_head_end: image_optional_head_end + 128]
         # append all above parts
         # fixed_head = mz_head + ms_dos_sub + rich_sign + pe_head + image_optional_head + data_directory
-        fixed_head = rich_sign + pe_head + image_optional_head + data_directory
+        fixed_head = pe_head + image_optional_head + data_directory
         # for each sections, just get the non-zero value
         number_of_sections = self.convert_int(self.reverse_bytes(pe_head[6:8]))
         for offset in range(number_of_sections):
@@ -124,6 +124,7 @@ class DataGeneratorF(keras.utils.Sequence):
             # fixed_head += other_head[offset_sections_start: offset_sections_start + 28] + \
             #               other_head[offset_sections_start + 36:offset_sections_start + 40]
             fixed_head += other_head[offset_sections_start + 36:offset_sections_start + 40]
+        fixed_head += rich_sign
         return [int(single_byte) for single_byte in fixed_head]
 
     def __data_generation(self, list_IDs_temp):
