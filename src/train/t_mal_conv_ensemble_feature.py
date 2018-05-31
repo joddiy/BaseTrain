@@ -51,10 +51,10 @@ class TMalConvEnsembleFeature(Train):
             'e_s_patience': 2,
             'gate_units': [
                 [128, 1, 1],
-                [128, 2, 1],
-                [128, 4, 1],
-                [128, 8, 1],
-                [128, 16, 1],
+                # [128, 2, 1],
+                # [128, 4, 1],
+                # [128, 8, 1],
+                # [128, 16, 1],
                 # [32, 32, 1],
                 # [32, 64, 1],
                 # [32, 128, 1],
@@ -99,13 +99,12 @@ class TMalConvEnsembleFeature(Train):
         :param gate_cnn_input:
         :return:
         """
-        conv1_out = Conv1D(gate_unit_config[0], gate_unit_config[1], strides=gate_unit_config[2], padding="same")(
-            gate_cnn_input)
+        conv1_out = Conv1D(gate_unit_config[0], gate_unit_config[1], strides=gate_unit_config[2])(gate_cnn_input)
         # conv2_out = Conv1D(gate_unit_config[0], gate_unit_config[1], strides=gate_unit_config[2], activation="sigmoid")(
         #     gate_cnn_input)
         # merged = Multiply()([conv1_out, conv2_out])
-        # gate_cnn_output = GlobalMaxPooling1D()(conv1_out)
-        return conv1_out
+        gate_cnn_output = GlobalMaxPooling1D()(conv1_out)
+        return gate_cnn_output
 
     def get_model(self):
         """
