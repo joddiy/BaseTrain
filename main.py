@@ -16,13 +16,14 @@ from src.train.t_mal_lgbm_feature import TMalLgbmF
 from keras.backend.tensorflow_backend import set_session
 import tensorflow as tf
 
+from src.train.t_res_net import TResNet
 
 if __name__ == '__main__':
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     set_session(tf.Session(config=config))
 
-    t_instance = TMalConvEnsembleFeature()
+    t_instance = TResNet()
     t_instance.run()
     # pp_instance = PPMalConv()
     # pp_instance.read_input()
