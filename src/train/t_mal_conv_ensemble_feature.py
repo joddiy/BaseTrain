@@ -50,7 +50,7 @@ class TMalConvEnsembleFeature(Train):
             's_random_state': 1234,
             'e_s_patience': 2,
             'gate_units': [
-                # [128, 1, 1],
+                [128, 1, 1],
                 # [128, 2, 1],
                 # [128, 4, 1],
                 # [128, 8, 1],
