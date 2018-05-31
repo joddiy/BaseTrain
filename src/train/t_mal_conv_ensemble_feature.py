@@ -104,7 +104,7 @@ class TMalConvEnsembleFeature(Train):
         #     gate_cnn_input)
         # merged = Multiply()([conv1_out, conv2_out])
         # gate_cnn_output = GlobalMaxPooling1D()(conv1_out)
-        return gate_cnn_output
+        return conv1_out
 
     def get_model(self):
         """
