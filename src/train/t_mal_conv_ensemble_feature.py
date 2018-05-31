@@ -37,7 +37,7 @@ class TMalConvEnsembleFeature(Train):
         self.train_df, self.label_df = PPMalConv().read_input()
         self.v_x = None
         self.v_y = None
-        self.max_len = 8192
+        self.max_len = 1024
         self.history = None
         self.model = None
         self.p_md5 = None
@@ -50,14 +50,14 @@ class TMalConvEnsembleFeature(Train):
             's_random_state': 1234,
             'e_s_patience': 2,
             'gate_units': [
-                [32, 1, 1],
-                [32, 2, 1],
-                [32, 4, 1],
-                [32, 8, 1],
-                [32, 16, 1],
-                [32, 32, 1],
-                [32, 64, 1],
-                [32, 128, 1],
+                [128, 1, 1],
+                [128, 2, 1],
+                [128, 4, 1],
+                [128, 8, 1],
+                [128, 16, 1],
+                # [32, 32, 1],
+                # [32, 64, 1],
+                # [32, 128, 1],
             ]
         }
 
@@ -158,8 +158,9 @@ class TMalConvEnsembleFeature(Train):
         callbacks_list = [tensor_board, check_point]
 
         # Generators
-        training_generator = DataGeneratorF(partition_train, self.train_df, self.label_df, batch_size)
-        validation_generator = DataGeneratorF(partition_validation, self.train_df, self.label_df, batch_size)
+        training_generator = DataGeneratorF(partition_train, self.train_df, self.label_df, batch_size, dim=self.max_len)
+        validation_generator = DataGeneratorF(partition_validation, self.train_df, self.label_df, batch_size,
+                                              dim=self.max_len)
 
         self.model.compile(loss='binary_crossentropy',
                            optimizer='adam',
