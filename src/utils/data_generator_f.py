@@ -100,8 +100,8 @@ class DataGeneratorF(keras.utils.Sequence):
         # # dos sub
         # ms_dos_sub = bytes_data[64:128]
         # decode rich sign
-        # rich_sign_end = bytes_data[128:].find(b'\x52\x69\x63\x68') + 136
-        # rich_sign = self.decode_rich_sign(bytes_data[128:rich_sign_end])
+        rich_sign_end = bytes_data[128:].find(b'\x52\x69\x63\x68') + 136
+        rich_sign = self.decode_rich_sign(bytes_data[128:rich_sign_end])
         # pe head
         pe_head_start = bytes_data[128:].find(b'\x50\x45\x00\x00') + 128
         pe_head = bytes_data[pe_head_start:pe_head_start + 24]
@@ -116,7 +116,7 @@ class DataGeneratorF(keras.utils.Sequence):
         data_directory = other_head[image_optional_head_end: image_optional_head_end + 128]
         # append all above parts
         # fixed_head = mz_head + ms_dos_sub + rich_sign + pe_head + image_optional_head + data_directory
-        fixed_head = pe_head + image_optional_head + data_directory
+        fixed_head = rich_sign + pe_head + image_optional_head + data_directory
         # for each sections, just get the non-zero value
         number_of_sections = self.convert_int(self.reverse_bytes(pe_head[6:8]))
         for offset in range(number_of_sections):
