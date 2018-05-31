@@ -43,7 +43,7 @@ class TMalConvFeature(Train):
         self.summary = {
             'input': DATA_CONFIG["mal_conv"]['train'],
             'time': time.time(),
-            'batch_size': 256,
+            'batch_size': 32,
             'epochs': 16,
             's_test_size': 0.05,
             's_random_state': 5242,
