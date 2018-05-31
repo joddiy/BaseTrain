@@ -100,10 +100,10 @@ class TMalConvEnsembleFeature(Train):
         :return:
         """
         conv1_out = Conv1D(gate_unit_config[0], gate_unit_config[1], strides=gate_unit_config[2])(gate_cnn_input)
-        conv2_out = Conv1D(gate_unit_config[0], gate_unit_config[1], strides=gate_unit_config[2], activation="sigmoid")(
-            gate_cnn_input)
-        merged = Multiply()([conv1_out, conv2_out])
-        gate_cnn_output = GlobalMaxPooling1D()(merged)
+        # conv2_out = Conv1D(gate_unit_config[0], gate_unit_config[1], strides=gate_unit_config[2], activation="sigmoid")(
+        #     gate_cnn_input)
+        # merged = Multiply()([conv1_out, conv2_out])
+        gate_cnn_output = GlobalMaxPooling1D()(conv1_out)
         return gate_cnn_output
 
     def get_model(self):
