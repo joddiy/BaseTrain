@@ -5,6 +5,7 @@
 # Copyright (C) <2017>  <Joddiy Zhang>
 # ------------------------------------------------------------------------
 from src.preprocess.pp_mal_conv import PPMalConv
+from src.train.t_ember_lgbm import TMalLgbmEmber
 from src.train.t_mal_conv import TMalConv
 from src.train.t_mal_conv_ensemble import TMalConvEnsemble
 from src.train.t_mal_conv_ensemble_feature import TMalConvEnsembleFeature
@@ -23,7 +24,7 @@ if __name__ == '__main__':
     config.gpu_options.allow_growth = True
     set_session(tf.Session(config=config))
 
-    t_instance = TResNet()
+    t_instance = TMalLgbmEmber()
     t_instance.run()
     # pp_instance = PPMalConv()
     # pp_instance.read_input()

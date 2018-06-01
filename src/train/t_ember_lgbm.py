@@ -19,7 +19,7 @@ from src.preprocess.pp_mal_conv import PPMalConv
 from src.train.train import Train
 
 
-class TMalLgbm(Train):
+class TMalLgbmEmber(Train):
     """
     train of mal conv
     """
