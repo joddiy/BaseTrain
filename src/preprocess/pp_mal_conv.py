@@ -7,9 +7,22 @@
 from src.config.config import *
 import pandas as pd
 
+from src.preprocess.pp_ember import PEFeatureExtractor
 from src.preprocess.pre_process import PreProcess
 import os.path
 import numpy as np
+
+
+def get_ember_feature(data):
+    """
+    int to bytes array
+    :param data:
+    :return:
+    """
+    bytes_data = bytes(map(int, data.split(",")))
+    extractor = PEFeatureExtractor()
+    features = np.array(extractor.feature_vector(bytes_data), dtype=np.float32)
+    return [features]
 
 
 def get_bytes_array(data):
@@ -163,6 +176,17 @@ class PPMalConv(PreProcess):
         print('Shape of the label data: ', self.label.shape)
         return self.train, self.label
 
+    def read_t_ember(self):
+        tmp_v = pd.read_csv(self.config["train"][0], header=None, sep="|", names=['row_data'],
+                            error_bad_lines=False)
+        tmp_v = tmp_v["row_data"].apply(lambda x: get_ember_feature(x))
+        self.train = pd.DataFrame(tmp_v.tolist(), dtype=float)
+        self.label = pd.read_csv(self.config["label"][0], header=None, error_bad_lines=False)
+        del tmp_v
+        print('Shape of the train data: ', self.train.shape)
+        print('Shape of the label data: ', self.label.shape)
+        return self.train, self.label
+
     def read_t_f(self):
         tmp_v = pd.read_csv(self.config["train"][0], header=None, sep="|", names=['row_data'],
                             error_bad_lines=False)
@@ -185,6 +209,17 @@ class PPMalConv(PreProcess):
                             error_bad_lines=False)
         tmp_v = tmp_v["row_data"].apply(lambda x: get_bytes_array(x))
         self.v_x = pd.DataFrame(tmp_v.tolist())
+        self.v_y = pd.read_csv(self.config["v_label"][0], header=None, error_bad_lines=False)
+        del tmp_v
+        print('Shape of the v_x data: ', self.v_x.shape)
+        print('Shape of the v_y data: ', self.v_y.shape)
+        return self.v_x, self.v_y
+
+    def read_v_ember(self):
+        tmp_v = pd.read_csv(self.config["v_train"][0], header=None, sep="|", names=['row_data'],
+                            error_bad_lines=False)
+        tmp_v = tmp_v["row_data"].apply(lambda x: get_ember_feature(x))
+        self.v_x = pd.DataFrame(tmp_v.tolist(), dtype=float)
         self.v_y = pd.read_csv(self.config["v_label"][0], header=None, error_bad_lines=False)
         del tmp_v
         print('Shape of the v_x data: ', self.v_x.shape)
