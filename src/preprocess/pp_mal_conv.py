@@ -12,6 +12,8 @@ from src.preprocess.pre_process import PreProcess
 import os.path
 import numpy as np
 
+extractor = PEFeatureExtractor()
+
 
 def get_ember_feature(data):
     """
@@ -20,7 +22,6 @@ def get_ember_feature(data):
     :return:
     """
     bytes_data = bytes(map(int, data.split(",")))
-    extractor = PEFeatureExtractor()
     features = np.array(extractor.feature_vector(bytes_data), dtype=np.float32)
     return features
 

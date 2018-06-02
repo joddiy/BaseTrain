@@ -18,7 +18,7 @@ import lightgbm as lgb
 from pandas import DataFrame
 
 
-class TAUCLgbmF(Test):
+class TAUCLgbmEmber(Test):
     def __init__(self):
         """
         init
