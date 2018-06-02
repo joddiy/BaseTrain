@@ -22,7 +22,7 @@ def get_ember_feature(data):
     bytes_data = bytes(map(int, data.split(",")))
     extractor = PEFeatureExtractor()
     features = np.array(extractor.feature_vector(bytes_data), dtype=np.float32)
-    return [features]
+    return features
 
 
 def get_bytes_array(data):
