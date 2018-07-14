@@ -39,11 +39,11 @@ def close():
     _connection = None
 
 
-def execute_sql(sql, table_suffix):
+def execute_sql(sql, t_suffix):
     """
 
     :param sql:
-    :param table_suffix:
+    :param t_suffix:
     :return:
     """
     start_time = time.time()
@@ -55,7 +55,7 @@ def execute_sql(sql, table_suffix):
     cursor = _connection.cursor()
     cursor.execute("SET NAMES utf8mb4")
 
-    cursor.execute(sql % table_suffix)
+    cursor.execute(sql % t_suffix)
 
     cursor.close()
     print("--- %s seconds ---" % (time.time() - start_time))
