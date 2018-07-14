@@ -4,9 +4,6 @@
 # time: 2018/7/14 3:48 PM
 # ------------------------------------------------------------------------
 
-import os
-import lief
-import sys
 import time
 
 import pymysql
@@ -42,9 +39,10 @@ def close():
     _connection = None
 
 
-def execute_sql(table_suffix):
+def execute_sql(sql, table_suffix):
     """
 
+    :param sql:
     :param table_suffix:
     :return:
     """
@@ -57,24 +55,23 @@ def execute_sql(table_suffix):
     cursor = _connection.cursor()
     cursor.execute("SET NAMES utf8mb4")
 
-    sql = """
+    cursor.execute(sql % table_suffix)
+
+    cursor.close()
+    print("--- %s seconds ---" % (time.time() - start_time))
+
+
+sql1 = """
 CREATE TABLE `mw_2017_%s` (
   `mw_id` int(11) NOT NULL AUTO_INCREMENT,
   `mw_file_hash` varchar(64) DEFAULT NULL,
   `mw_file_prefix` varchar(64) NOT NULL DEFAULT '',
   `mw_file_suffix` varchar(64) NOT NULL DEFAULT '',
-  `mw_num_engines` int(3) DEFAULT '0'
+  `mw_num_engines` int(3) DEFAULT '0',
   PRIMARY KEY (`mw_id`),
   UNIQUE KEY `mw_index_2017_mw_file_hash_uindex` (`mw_file_hash`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
-    """ % table_suffix
-    cursor.execute(sql)
-
-    cursor.close()
-    print("--- %s seconds ---" % (time.time() - start_time))
-
-    return ret
-
+"""
 
 db = {
     'host': '172.26.187.242',
@@ -88,6 +85,6 @@ table_suffix = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C",
 res = []
 for suffix in table_suffix:
     get_connection(db)
-    execute_sql(suffix)
+    execute_sql(sql1, suffix)
     close()
 close()
