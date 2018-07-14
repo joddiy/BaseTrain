@@ -25,8 +25,16 @@ class TAUCLgbmEmber(Test):
         """
         self.v_x, self.v_y = PPMalConv().read_v_ember()
 
-    def predict(self):
-        pass
+    def load_mode(self, model_path):
+        model = lgb.Booster(model_file=model_path)
+        return model
+
+    def predict(self, model):
+        y_p = model.predict(self.v_x)
+        y_pred = np.zeros((len(y_p), 1))
+        for i in range(len(y_p)):
+            y_pred[i, 0] = y_p[i]
+        return y_pred
 
     def run(self):
         """
@@ -41,11 +49,8 @@ class TAUCLgbmEmber(Test):
 
         for f_name in model_files:
 
-            model = lgb.Booster(model_file=model_dir + f_name)
-            y_p = model.predict(self.v_x)
-            y_pred = np.zeros((len(y_p), 1))
-            for i in range(len(y_p)):
-                y_pred[i, 0] = y_p[i]
+            model = self.load_mode(model_dir + f_name)
+            y_pred = self.predict(model)
 
             print("shape", y_pred.shape)
             auc = roc_auc_score(y_true, y_pred)
@@ -77,7 +82,7 @@ class TAUCLgbmEmber(Test):
                     print("fp: ", fp_rate)
                     print("recall: ", recall_rate)
 
-            save(res, './src/auc/' + f_name[0:-3])
+            # save(res, './src/auc/' + f_name[0:-3])
             # lists = sorted(object_file.items())
             # x, y = zip(*lists)
             # plt.title('model accuracy')

@@ -9,21 +9,17 @@ import json
 import time
 
 import keras
-import pandas as pd
 from keras import Input
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.layers import Dense, Embedding, Conv1D, Multiply, GlobalMaxPooling1D
 from keras.models import load_model
-from sklearn.metrics import roc_auc_score, confusion_matrix
 from sklearn.model_selection import train_test_split
-from src.config.config import *
 
+from src.config.config import *
 from src.config.config import CACHE_DIR
 from src.preprocess.pp_mal_conv import PPMalConv
 from src.train.train import Train
 from src.utils.data_generator import DataGenerator
-from src.utils.utils import save
-import numpy as np
 
 
 class TMalConv(Train):

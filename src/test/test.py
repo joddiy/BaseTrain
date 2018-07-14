@@ -17,7 +17,7 @@ class Test(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def predict(self):
+    def predict(self, model):
         """
         :return:
         """
