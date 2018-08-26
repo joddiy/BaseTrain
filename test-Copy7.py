@@ -56,7 +56,7 @@ db = {
 
 
 # In[4]:
-
+import time
 
 # the base function which can query sql and return dict data
 def get_specific_data(table_suffix, sql=None):
@@ -248,7 +248,6 @@ class DataGenerator(keras.utils.Sequence):
 # In[39]:
 
 
-import time
 from keras import Input
 from keras.callbacks import EarlyStopping, TensorBoard, ModelCheckpoint
 from keras.layers import Dense, Embedding, Conv1D, Conv2D, Multiply, GlobalMaxPooling1D, Dropout, Activation
