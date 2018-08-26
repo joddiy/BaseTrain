@@ -324,11 +324,11 @@ class Autoencoder():
         print('Length of the train: ', len(x_train))
         print('Length of the validation: ', len(x_val))
 
-        tensor_board = TensorBoard(log_dir='/home/zhaoqi/autoencoder/log/', batch_size=batch_size)
+        # tensor_board = TensorBoard(log_dir='/home/zhaoqi/autoencoder/log/', batch_size=batch_size)
         file_path = "/home/zhaoqi/autoencoder/models/"+ str(self.start_time) +"-{epoch:04d}-{val_loss:.5f}.h5"
         #         early_stopping = EarlyStopping("val_loss", patience=2, verbose=0, mode='auto')
-        check_point = ModelCheckpoint(file_path, monitor='val_loss', verbose=1, save_best_only=True, mode='auto')
-        callbacks_list = [check_point, tensor_board]
+        check_point = ModelCheckpoint(file_path, monitor='val_loss', verbose=1, save_best_only=False, mode='auto')
+        callbacks_list = [check_point]
         
         # Generators
         training_generator = DataGenerator(range(len(x_train)), x_train, batch_size)
